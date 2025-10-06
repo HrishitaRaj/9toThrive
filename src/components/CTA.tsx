@@ -54,9 +54,9 @@ const CTA = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { icon: Users, label: "Students", action: "Build Your Profile", link: "/students" },
+              { icon: Users, label: "Students", action: "Build Your Profile", link: "/student" },
               { icon: Briefcase, label: "Recruiters", action: "Post Jobs" , link: "/recruiters"},
-              { icon: BarChart3, label: "Placement Cell", action: "Manage Drives", link: "/placement-cell" },
+              { icon: BarChart3, label: "Placement Cell", action: "Manage Drives", link: "/placement" },
             ].map((item, index) => (
               <motion.a
                 key={item.label}
