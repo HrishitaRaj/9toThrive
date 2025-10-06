@@ -509,7 +509,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Discover Section */}
+            {/* Discover Student Section */}
             <Card className="border-2 border-border bg-[#011627ff]">
               <CardHeader className="bg-[#011627ff]">
                 <CardTitle className="text-[#e25c28ff] flex items-center gap-2">
