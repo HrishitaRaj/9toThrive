@@ -13,6 +13,7 @@ import Jobs from "./pages/Placement/Jobs";
 import Analytics from "./pages/Placement/Analytics";
 import Communication from "./pages/Placement/Communication";
 import Settings from "./pages/Placement/Settings";
+import Student from "./pages/Student/Student";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           </Route>
           
           <Route path="*" element={<NotFound />} />
+          <Route path="/student" element={<Student />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
