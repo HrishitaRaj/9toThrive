@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -116,6 +117,12 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+
+      <div className="container mx-auto px-4 py-4 flex justify-end">
+        <Link to="/">
+          <Button variant="ghost">Back to Home</Button>
+        </Link>
+      </div>
 
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Top Stats */}

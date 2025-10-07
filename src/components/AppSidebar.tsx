@@ -28,9 +28,6 @@ export function AppSidebar() {
     <Sidebar className={state === "collapsed" ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-sidebar-background">
         <div className="flex items-center gap-3 p-6 border-b border-sidebar-border">
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
-            <span className="text-xl">✨</span>
-          </div>
           {state !== "collapsed" && <span className="text-xl font-bold text-primary">9toThrive</span>}
         </div>
 
