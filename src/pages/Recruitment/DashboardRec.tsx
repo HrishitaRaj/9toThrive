@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/layout/PageHeaderRec";
+import { Link } from "react-router-dom";
 import { StatCard } from "@/components/Recruitment/Card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -48,6 +49,12 @@ export default function DashboardRec() {
           </>
         }
       />
+
+      <div className="flex justify-end mb-4">
+        <Link to="/">
+          <Button variant="ghost">Back to Home</Button>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {stats.map((stat) => (
