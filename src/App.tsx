@@ -15,6 +15,7 @@ import ResumeGenerator from "./pages/Student/ResumeGenerator";
 import ATSChecker from "./pages/Student/ATSChecker";
 import SettingsStudent from "./pages/Student/Settings";
 import NotFound from "./pages/NotFound";
+import Match from "./pages/Student/Match";
 
 
 // Placement dashboard imports
@@ -58,6 +59,7 @@ const AppContent = () => {
           <main className="flex-1 overflow-auto">
             {path.startsWith("/student") && <Student />}
             {path === "/jobs" && <JobsStudent />}
+            {path === "/match" && <Match />}
             {path === "/applied" && <AppliedJobs />}
             {path === "/stats" && <Stats />}
             {path === "/resume-generator" && <ResumeGenerator />}
@@ -84,6 +86,7 @@ const App = () => (
             {/* 👨‍🎓 Student Dashboard Routes */}
             <Route path="/student/*" element={<AppContent />} />
             <Route path="/jobs" element={<AppContent />} />
+            <Route path="/match" element={<AppContent />} />
             <Route path="/applied" element={<AppContent />} />
             <Route path="/stats" element={<AppContent />} />
             <Route path="/resume-generator" element={<AppContent />} />
