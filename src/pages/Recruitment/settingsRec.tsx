@@ -15,7 +15,7 @@ import {
 
 export default function Settings() {
   return (
-    <div>
+    <div className="p-6 md:p-8">
       <PageHeader
         title="Settings"
         description="Manage your recruiter profile and system preferences"
