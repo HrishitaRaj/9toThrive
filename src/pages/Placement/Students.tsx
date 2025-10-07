@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Send, CheckCircle, Eye } from "lucide-react";
+import { CheckCircle, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { BulkUploadDialog } from "@/components/Placement/BulkUploadDialog";
+import { SendNotificationDialog } from "@/components/Placement/SendNotificationDialog";
 
 interface Student {
   id: string;
@@ -15,6 +17,8 @@ interface Student {
   branch: string;
   skills: string[];
   verificationStatus: "verified" | "unverified" | "pending";
+  email?: string;
+  rollNo?: string;
 }
 
 const mockStudents: Student[] = [
@@ -26,17 +30,22 @@ const mockStudents: Student[] = [
 ];
 
 export default function Students() {
+  const [students, setStudents] = useState<Student[]>(mockStudents);
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const filteredStudents = mockStudents.filter((student) => {
+  const filteredStudents = students.filter((student) => {
     const matchesBranch = selectedBranch === "all" || student.branch === selectedBranch;
     const matchesStatus = selectedStatus === "all" || student.verificationStatus === selectedStatus;
     const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           student.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesBranch && matchesStatus && matchesSearch;
   });
+
+  const handleStudentsUploaded = (newStudents: Student[]) => {
+    setStudents(prev => [...prev, ...newStudents]);
+  };
 
   const handleVerify = (studentName: string) => {
     toast.success(`${studentName} has been verified successfully!`);
@@ -120,14 +129,8 @@ export default function Students() {
         description="Manage student registrations and verifications"
         actions={
           <>
-            <Button variant="outline">
-              <Upload className="w-4 h-4 mr-2" />
-              Bulk Upload
-            </Button>
-            <Button>
-              <Send className="w-4 h-4 mr-2" />
-              Send Notification
-            </Button>
+            <BulkUploadDialog onStudentsUploaded={handleStudentsUploaded} />
+            <SendNotificationDialog students={filteredStudents} />
           </>
         }
       />
