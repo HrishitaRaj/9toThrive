@@ -26,6 +26,18 @@ const ResumeGenerator = () => {
   ]);
 
   const [skills, setSkills] = useState("");
+  
+  const [projects, setProjects] = useState([
+    { name: "", description: "", technologies: "", duration: "", link: "" },
+  ]);
+  
+  const [certifications, setCertifications] = useState([
+    { name: "", issuer: "", date: "", id: "" },
+  ]);
+  
+  const [achievements, setAchievements] = useState([
+    { title: "", description: "", date: "" },
+  ]);
 
   const addExperience = () => {
     setExperiences([...experiences, { company: "", role: "", duration: "", description: "" }]);
@@ -42,6 +54,34 @@ const ResumeGenerator = () => {
   const removeEducation = (index: number) => {
     setEducations(educations.filter((_, i) => i !== index));
   };
+
+  // Projects
+  const addProject = () => {
+    setProjects([...projects, { name: "", description: "", technologies: "", duration: "", link: "" }]);
+  };
+
+  const removeProject = (index: number) => {
+    setProjects(projects.filter((_, i) => i !== index));
+  };
+
+  // Certifications
+  const addCertification = () => {
+    setCertifications([...certifications, { name: "", issuer: "", date: "", id: "" }]);
+  };
+
+  const removeCertification = (index: number) => {
+    setCertifications(certifications.filter((_, i) => i !== index));
+  };
+
+  // Achievementss
+  const addAchievement = () => {
+    setAchievements([...achievements, { title: "", description: "", date: "" }]);
+  };
+
+  const removeAchievement = (index: number) => {
+    setAchievements(achievements.filter((_, i) => i !== index));
+  };
+
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -154,6 +194,108 @@ const ResumeGenerator = () => {
       doc.setFont("helvetica", "normal");
       const skillsLines = doc.splitTextToSize(skills, 170);
       doc.text(skillsLines, 20, yPosition);
+    }
+
+    // Projects
+    if (projects.some((p) => p.name || p.description)) {
+      if (yPosition > 240) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      yPosition += 10;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("PROJECTS", 20, yPosition);
+      yPosition += 6;
+
+      projects.forEach((p) => {
+        if (p.name || p.description) {
+          doc.setFontSize(11);
+          doc.setFont("helvetica", "bold");
+          doc.text(p.name || "Project", 20, yPosition);
+          yPosition += 5;
+
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "normal");
+          const meta = [p.technologies && `Tech: ${p.technologies}`, p.duration && `Duration: ${p.duration}`, p.link && `Link: ${p.link}`].filter(Boolean).join(' | ');
+          if (meta) {
+            const metaLines = doc.splitTextToSize(meta, 170);
+            doc.text(metaLines, 20, yPosition);
+            yPosition += metaLines.length * 5;
+          }
+
+          if (p.description) {
+            const projLines = doc.splitTextToSize(p.description, 170);
+            doc.text(projLines, 20, yPosition);
+            yPosition += projLines.length * 5 + 4;
+          }
+        }
+      });
+    }
+
+    // Certifications
+    if (certifications.some((c) => c.name || c.issuer)) {
+      if (yPosition > 240) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      yPosition += 10;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("CERTIFICATIONS", 20, yPosition);
+      yPosition += 6;
+
+      certifications.forEach((c) => {
+        if (c.name) {
+          doc.setFontSize(11);
+          doc.setFont("helvetica", "bold");
+          doc.text(c.name, 20, yPosition);
+          yPosition += 5;
+
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "normal");
+          const certMeta = [c.issuer && `${c.issuer}`, c.date && `${c.date}`, c.id && `ID: ${c.id}`].filter(Boolean).join(' | ');
+          if (certMeta) {
+            const certLines = doc.splitTextToSize(certMeta, 170);
+            doc.text(certLines, 20, yPosition);
+            yPosition += certLines.length * 5 + 4;
+          }
+        }
+      });
+    }
+
+    // Achievements
+    if (achievements.some((a) => a.title || a.description)) {
+      if (yPosition > 240) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      yPosition += 10;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("ACHIEVEMENTS", 20, yPosition);
+      yPosition += 6;
+
+      achievements.forEach((a) => {
+        if (a.title) {
+          doc.setFontSize(11);
+          doc.setFont("helvetica", "bold");
+          doc.text(a.title, 20, yPosition);
+          yPosition += 5;
+
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "normal");
+          if (a.date) {
+            doc.text(a.date, 20, yPosition);
+            yPosition += 5;
+          }
+          if (a.description) {
+            const achLines = doc.splitTextToSize(a.description, 170);
+            doc.text(achLines, 20, yPosition);
+            yPosition += achLines.length * 5 + 4;
+          }
+        }
+      });
     }
 
     doc.save("ATS-Resume.pdf");
@@ -394,6 +536,240 @@ const ResumeGenerator = () => {
                   rows={6}
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-border">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-primary">Projects</CardTitle>
+                <Button onClick={addProject} size="sm" variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {projects.map((p, idx) => (
+                <div key={idx} className="space-y-2 p-3 border border-border rounded-lg relative">
+                  {projects.length > 1 && (
+                    <Button
+                      onClick={() => removeProject(idx)}
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-2 right-2"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <div className="space-y-2">
+                    <Label>Project Name</Label>
+                    <Input
+                      value={p.name}
+                      onChange={(e) => {
+                        const copy = [...projects];
+                        copy[idx].name = e.target.value;
+                        setProjects(copy);
+                      }}
+                      placeholder="Project title"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Technologies</Label>
+                    <Input
+                      value={p.technologies}
+                      onChange={(e) => {
+                        const copy = [...projects];
+                        copy[idx].technologies = e.target.value;
+                        setProjects(copy);
+                      }}
+                      placeholder="React, Node.js, MongoDB"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Duration</Label>
+                    <Input
+                      value={p.duration}
+                      onChange={(e) => {
+                        const copy = [...projects];
+                        copy[idx].duration = e.target.value;
+                        setProjects(copy);
+                      }}
+                      placeholder="Jan 2023 - Apr 2023"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Link (Optional)</Label>
+                    <Input
+                      value={p.link}
+                      onChange={(e) => {
+                        const copy = [...projects];
+                        copy[idx].link = e.target.value;
+                        setProjects(copy);
+                      }}
+                      placeholder="https://github.com/your/repo"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea
+                      value={p.description}
+                      onChange={(e) => {
+                        const copy = [...projects];
+                        copy[idx].description = e.target.value;
+                        setProjects(copy);
+                      }}
+                      placeholder="Short description of the project and your role"
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-border">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-primary">Certifications</CardTitle>
+                <Button onClick={addCertification} size="sm" variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {certifications.map((c, idx) => (
+                <div key={idx} className="space-y-2 p-3 border border-border rounded-lg relative">
+                  {certifications.length > 1 && (
+                    <Button
+                      onClick={() => removeCertification(idx)}
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-2 right-2"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <div className="space-y-2">
+                    <Label>Certification Name</Label>
+                    <Input
+                      value={c.name}
+                      onChange={(e) => {
+                        const copy = [...certifications];
+                        copy[idx].name = e.target.value;
+                        setCertifications(copy);
+                      }}
+                      placeholder="Certification Title"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Issuer</Label>
+                    <Input
+                      value={c.issuer}
+                      onChange={(e) => {
+                        const copy = [...certifications];
+                        copy[idx].issuer = e.target.value;
+                        setCertifications(copy);
+                      }}
+                      placeholder="Issuing Organization"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Label>Date</Label>
+                      <Input
+                        value={c.date}
+                        onChange={(e) => {
+                          const copy = [...certifications];
+                          copy[idx].date = e.target.value;
+                          setCertifications(copy);
+                        }}
+                        placeholder="MM/YYYY"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Label>ID (Optional)</Label>
+                      <Input
+                        value={c.id}
+                        onChange={(e) => {
+                          const copy = [...certifications];
+                          copy[idx].id = e.target.value;
+                          setCertifications(copy);
+                        }}
+                        placeholder="Certification ID"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-border">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-primary">Achievements</CardTitle>
+                <Button onClick={addAchievement} size="sm" variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {achievements.map((a, idx) => (
+                <div key={idx} className="space-y-2 p-3 border border-border rounded-lg relative">
+                  {achievements.length > 1 && (
+                    <Button
+                      onClick={() => removeAchievement(idx)}
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-2 right-2"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <div className="space-y-2">
+                    <Label>Title</Label>
+                    <Input
+                      value={a.title}
+                      onChange={(e) => {
+                        const copy = [...achievements];
+                        copy[idx].title = e.target.value;
+                        setAchievements(copy);
+                      }}
+                      placeholder="Achievement title"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Label>Date</Label>
+                      <Input
+                        value={a.date}
+                        onChange={(e) => {
+                          const copy = [...achievements];
+                          copy[idx].date = e.target.value;
+                          setAchievements(copy);
+                        }}
+                        placeholder="YYYY"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea
+                      value={a.description}
+                      onChange={(e) => {
+                        const copy = [...achievements];
+                        copy[idx].description = e.target.value;
+                        setAchievements(copy);
+                      }}
+                      placeholder="Brief details about the achievement"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
