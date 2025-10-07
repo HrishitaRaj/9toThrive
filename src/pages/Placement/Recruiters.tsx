@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { PageHeader } from "@/components/Placement/PageHeader";
 import { DataTable } from "@/components/Placement/Datatable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Flag, Plus } from "lucide-react";
+import { CheckCircle, Flag } from "lucide-react";
 import { toast } from "sonner";
+import { AddRecruiterDialog } from "@/components/Placement/AddRecruiterDialog";
 
 interface Recruiter {
   id: string;
@@ -58,6 +60,16 @@ const mockRecruiters: Recruiter[] = [
 ];
 
 export default function Recruiters() {
+  const [recruiters, setRecruiters] = useState<Recruiter[]>(mockRecruiters);
+
+  const handleRecruiterAdded = (newRecruiter: Omit<Recruiter, "id">) => {
+    const recruiter = {
+      ...newRecruiter,
+      id: (recruiters.length + 1).toString(),
+    };
+    setRecruiters(prev => [...prev, recruiter]);
+  };
+
   const handleApprove = (companyName: string) => {
     toast.success(`${companyName} has been approved!`);
   };
@@ -142,15 +154,12 @@ export default function Recruiters() {
         title="Recruiters"
         description="Manage recruiting companies and their job postings"
         actions={
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Recruiter
-          </Button>
+          <AddRecruiterDialog onRecruiterAdded={handleRecruiterAdded} />
         }
       />
 
       <div className="mt-6">
-        <DataTable data={mockRecruiters} columns={columns} />
+        <DataTable data={recruiters} columns={columns} />
       </div>
     </div>
   );
