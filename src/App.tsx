@@ -15,13 +15,9 @@ import Students from "./pages/Placement/Students";
 import Recruiters from "./pages/Placement/Recruiters";
 import Jobs from "./pages/Placement/Jobs";
 import Analytics from "./pages/Placement/Analytics";
-<<<<<<< Updated upstream
 import Communication from "./pages/Placement/Communication";
 import Settings from "./pages/Placement/Settings";
 import Student from "./pages/Student/Student";
-=======
-import CommunicationPlacement from "./pages/Placement/Communication";
-import SettingsPlacement from "./pages/Placement/Settings";
 
 // Recruitment dashboard imports
 import { RecruitmentLayout } from "./components/layout/RecruitmentLayout";
@@ -33,7 +29,6 @@ import EligibilityCriteria from "./pages/Recruitment/EligibilityCriteria";
 import CommunicationRec from "./pages/Recruitment/Communication";
 import Reports from "./pages/Recruitment/Reports";
 import SettingsRec from "./pages/Recruitment/settingsRec";
->>>>>>> Stashed changes
 
 const queryClient = new QueryClient();
 
@@ -54,8 +49,8 @@ const App = () => (
             <Route path="recruiters" element={<Recruiters />} />
             <Route path="jobs" element={<Jobs />} />
             <Route path="analytics" element={<Analytics />} />
-            <Route path="communication" element={<CommunicationPlacement />} />
-            <Route path="settings" element={<SettingsPlacement />} />
+            <Route path="communication" element={<Communication />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
 
           {/* 💼 Recruitment Dashboard Routes */}
