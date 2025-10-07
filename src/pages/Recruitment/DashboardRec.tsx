@@ -31,7 +31,7 @@ const monthlyApplications = [
 
 export default function DashboardRec() {
   return (
-    <div>
+    <div className="p-6 md:p-8">
       <PageHeader
         title="Dashboard"
         description="Overview of your recruitment pipeline and key metrics"
