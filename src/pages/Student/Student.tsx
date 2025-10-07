@@ -27,7 +27,6 @@ const Dashboard = () => {
   ]);
   const [newJobTitle, setNewJobTitle] = useState("");
   const [newSkill, setNewSkill] = useState("");
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   const recommendedJobTitles = ["Software Engineer", "Data Scientist", "Backend Developer", "DevOps Engineer"];
   const recommendedSkills = ["Java", "C++", "Object-Oriented Programming (OOP)", "REST APIs", "HTML5", "Unit Testing"];
@@ -100,89 +99,33 @@ const Dashboard = () => {
   };
 
   const getScoreColor = (score: number) => {
-    // Use main text color for prominent scores per design request
-    if (score >= 80) return "text-[#e25c28ff]";
-    if (score >= 60) return "text-[#e25c28ff]";
-    return "text-[#e25c28ff]";
+    if (score >= 80) return "text-success";
+    if (score >= 60) return "text-warning";
+    return "text-destructive";
   };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, string> = {
-      Interview: "bg-[#011627ff] text-[#e25c28ff] border-[#e25c28ff]/50",
-      Applied: "bg-[#011627ff] text-[#e25c28ff] border-[#e25c28ff]/50",
-      Rejected: "bg-[#011627ff] text-[#e25c28ff] border-[#e25c28ff]/50",
-      Shortlisted: "bg-[#011627ff] text-[#e25c28ff] border-[#e25c28ff]/50",
+      Interview: "bg-accent/20 text-accent border-accent/50",
+      Applied: "bg-primary/20 text-primary border-primary/50",
+      Rejected: "bg-destructive/20 text-destructive border-destructive/50",
+      Shortlisted: "bg-success/20 text-success border-success/50",
     };
     return variants[status] || "bg-muted";
   };
 
   return (
-    <div className="min-h-screen bg-[#011627ff]">
-      {/* Elegant Navbar */}
-      <header className="sticky top-4 z-50">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex items-center justify-between gap-4 rounded-xl bg-[#011627ff]/60 backdrop-blur-md border border-[#073138]/40 px-4 py-3 shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-md bg-[#011627ff] border border-[#e25c28ff]/20 flex items-center justify-center">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                      <circle cx="12" cy="12" r="9" fill="#011627ff" stroke="#e25c28ff" strokeWidth="1.5" />
-                      <circle cx="18" cy="6" r="2" fill="#e25c28ff" />
-                    </svg>
-                  </div>
-                  <nav className="hidden sm:flex items-center gap-3">
-                    <a href="#ats-checker" className="px-4 py-2 rounded-md text-sm text-white hover:bg-[#022632] transition">ATS Checker</a>
-                    <a href="#jobs-for-you" className="px-4 py-2 rounded-md text-sm text-white hover:bg-[#022632] transition">Jobs for You</a>
-                    <a href="#ai-recommendations" className="px-4 py-2 rounded-md text-sm text-white hover:bg-[#022632] transition">AI Recommendations</a>
-                  </nav>
-                </div>
-              </div>
-
-              <nav className="hidden sm:flex items-center gap-3">
-                <a href="#ats-checker" className="px-4 py-2 rounded-md text-sm text-white hover:bg-[#022632] transition">ATS Checker</a>
-                <a href="#jobs-for-you" className="px-4 py-2 rounded-md text-sm text-white hover:bg-[#022632] transition">Jobs for You</a>
-                <a href="#ai-recommendations" className="px-4 py-2 rounded-md text-sm text-white hover:bg-[#022632] transition">AI Recommendations</a>
-              </nav>
-
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="icon" className="text-white border border-transparent hover:bg-[#022632]/60">
-                  <Settings className="h-5 w-5 text-white" />
-                </Button>
-                {/* removed avatar per request */}
-              </div>
-
-              {/* mobile menu button */}
-              <div className="sm:hidden">
-                <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu" className="p-2 rounded-md bg-transparent border border-transparent text-white">
-                  {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile menu panel */}
-      {mobileOpen && (
-        <div className="sm:hidden fixed inset-x-4 top-20 z-50 rounded-lg bg-[#011627ff]/95 border border-[#073138]/30 p-4 shadow-lg">
-          <nav className="flex flex-col gap-2">
-            <a onClick={() => setMobileOpen(false)} href="#ats-checker" className="block px-3 py-2 rounded text-white">ATS Checker</a>
-            <a onClick={() => setMobileOpen(false)} href="#jobs-for-you" className="block px-3 py-2 rounded text-white">Jobs for You</a>
-            <a onClick={() => setMobileOpen(false)} href="#ai-recommendations" className="block px-3 py-2 rounded text-white">AI Recommendations</a>
-          </nav>
-        </div>
-      )}
+    <div className="min-h-screen bg-background">
 
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Top Stats */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-2 border-border hover:shadow-lg transition-all bg-[#011627ff]">
+          <Card className="border-2 border-border hover:shadow-lg transition-all bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-[#f1f7edff]">Profile Score</p>
-                  <p className="text-3xl font-bold text-[#e25c28ff]">{profileCompletion}%</p>
+                  <p className="text-sm text-muted-foreground">Profile Score</p>
+                  <p className="text-3xl font-bold text-foreground">{profileCompletion}%</p>
                   <Progress value={profileCompletion} className="h-2 mt-2" />
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -192,49 +135,49 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border hover:shadow-lg transition-all bg-[#011627ff]">
+          <Card className="border-2 border-border hover:shadow-lg transition-all bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-[#f1f7edff]">ATS Score</p>
+                  <p className="text-sm text-muted-foreground">ATS Score</p>
                   <p className={`text-3xl font-bold ${getScoreColor(resumeScore)}`}>{resumeScore}%</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <TrendingUp className="h-4 w-4 text-[#e25c28ff]" />
-                    <span className="text-xs text-[#f1f7edff]">+5% this week</span>
+                    <TrendingUp className="h-4 w-4 text-success" />
+                    <span className="text-xs text-success">+5% this week</span>
                   </div>
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-[#011627ff] flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-[#e25c28ff]" />
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border hover:shadow-lg transition-all bg-[#011627ff]">
+          <Card className="border-2 border-border hover:shadow-lg transition-all bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-[#f1f7edff]">Applications</p>
-                  <p className="text-3xl font-bold text-[#e25c28ff]">24</p>
-                  <p className="text-xs text-[#f1f7edff] mt-2">4 active interviews</p>
+                  <p className="text-sm text-muted-foreground">Applications</p>
+                  <p className="text-3xl font-bold text-foreground">24</p>
+                  <p className="text-xs text-muted-foreground mt-2">4 active interviews</p>
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-[#011627ff] flex items-center justify-center">
-                  <Briefcase className="h-6 w-6 text-[#e25c28ff]" />
+                <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center">
+                  <Briefcase className="h-6 w-6 text-success" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-2 border-border hover:shadow-lg transition-all bg-[#011627ff]">
+          <Card className="border-2 border-border hover:shadow-lg transition-all bg-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-[#f1f7edff]">Job Matches</p>
-                  <p className="text-3xl font-bold text-[#e25c28ff]">47</p>
-                  <p className="text-xs text-[#f1f7edff] mt-2">New opportunities</p>
+                  <p className="text-sm text-muted-foreground">Job Matches</p>
+                  <p className="text-3xl font-bold text-foreground">47</p>
+                  <p className="text-xs text-muted-foreground mt-2">New opportunities</p>
                 </div>
-                <div className="h-12 w-12 rounded-xl bg-[#011627ff] flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-[#e25c28ff]" />
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -246,18 +189,18 @@ const Dashboard = () => {
           {/* Left Column - Job Preferences & Skills */}
           <div className="lg:col-span-2 space-y-8">
             {/* Job Titles */}
-            <Card className="border-2 border-border bg-[#011627ff]">
+            <Card className="border-2 border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-[#e25c28ff] flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Briefcase className="h-5 w-5" />
                   Job Titles
-                  <Badge variant="secondary" className="ml-2 bg-[#011627ff] text-[#f1f7edff] border-[#e25c28ff]/20">max 3 job titles</Badge>
+                  <Badge variant="secondary" className="ml-2">max 3 job titles</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-3">
                   {selectedJobTitles.map((title) => (
-                    <Badge key={title} className="px-4 py-2 bg-[#011627ff] text-[#f1f7edff] hover:bg-[#011627ff] cursor-pointer border border-[#e25c28ff]/10">
+                    <Badge key={title} className="px-4 py-2 bg-success text-success-foreground hover:bg-success/80 cursor-pointer">
                       {title}
                       <X className="ml-2 h-4 w-4" onClick={() => removeJobTitle(title)} />
                     </Badge>
@@ -270,9 +213,9 @@ const Dashboard = () => {
                       value={newJobTitle}
                       onChange={(e) => setNewJobTitle(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && addJobTitle()}
-                      className="bg-[#011627ff] border-border text-[#e25c28ff] placeholder:text-[#f1f7edff]"
+                      className="bg-input border-border text-foreground"
                     />
-                    <Button onClick={addJobTitle} size="icon" className="bg-[#011627ff] border border-[#e25c28ff]/10 text-[#e25c28ff] hover:bg-[#011627ff]">
+                    <Button onClick={addJobTitle} size="icon" className="bg-primary hover:bg-primary/90">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -281,18 +224,18 @@ const Dashboard = () => {
             </Card>
 
             {/* Top Skills */}
-            <Card className="border-2 border-border bg-[#011627ff]">
+            <Card className="border-2 border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-[#e25c28ff] flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Star className="h-5 w-5" />
                   Top Skills
-                  <Badge variant="secondary" className="ml-2 bg-[#011627ff] text-[#f1f7edff] border-[#e25c28ff]/20">max 18 skills</Badge>
+                  <Badge variant="secondary" className="ml-2">max 18 skills</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-3">
                   {selectedSkills.map((skill) => (
-                    <Badge key={skill} className="px-4 py-2 bg-[#011627ff] text-[#f1f7edff] hover:bg-[#011627ff] cursor-pointer border border-[#e25c28ff]/10">
+                    <Badge key={skill} className="px-4 py-2 bg-success text-success-foreground hover:bg-success/80 cursor-pointer">
                       {skill}
                       <X className="ml-2 h-4 w-4" onClick={() => removeSkill(skill)} />
                     </Badge>
@@ -305,9 +248,9 @@ const Dashboard = () => {
                       value={newSkill}
                       onChange={(e) => setNewSkill(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && addSkill()}
-                      className="bg-[#011627ff] border border-[#e25c28ff]/10 text-[#f1f7edff] placeholder:text-[#f1f7edff]"
+                      className="bg-input border-border text-foreground"
                     />
-                    <Button onClick={addSkill} size="icon" className="bg-[#011627ff] border border-[#e25c28ff]/10 text-[#e25c28ff] hover:bg-[#011627ff]">
+                    <Button onClick={addSkill} size="icon" className="bg-primary hover:bg-primary/90">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -316,16 +259,16 @@ const Dashboard = () => {
             </Card>
 
             {/* AI Recommendations */}
-            <Card id="ai-recommendations" className="border-2 border-success/30 bg-[#011627ff]">
+            <Card className="border-2 border-success/30 bg-card">
               <CardHeader>
-                <CardTitle className="text-[#e25c28ff] flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-success" />
                   AI Recommendations
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-sm text-[#f1f7edff] mb-3">Select recommended Job Titles</p>
+                  <p className="text-sm text-muted-foreground mb-3">Select recommended Job Titles</p>
                   <div className="flex flex-wrap gap-2">
                     {recommendedJobTitles.map((title) => (
                       <Button
@@ -334,7 +277,7 @@ const Dashboard = () => {
                         size="sm"
                         onClick={() => addRecommendedJobTitle(title)}
                         disabled={selectedJobTitles.includes(title) || selectedJobTitles.length >= 3}
-                        className="bg-[#011627ff] border-[#e25c28ff]/20 text-[#f1f7edff] hover:bg-[#011627ff] hover:text-[#e25c28ff]"
+                        className="border-success/50 text-muted-foreground hover:bg-success/10 hover:text-foreground"
                       >
                         {title}
                         <Plus className="ml-2 h-4 w-4" />
@@ -343,7 +286,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-[#f1f7edff] mb-3">Select recommended Skills</p>
+                  <p className="text-sm text-muted-foreground mb-3">Select recommended Skills</p>
                   <div className="flex flex-wrap gap-2">
                     {recommendedSkills.map((skill) => (
                       <Button
@@ -352,7 +295,7 @@ const Dashboard = () => {
                         size="sm"
                         onClick={() => addRecommendedSkill(skill)}
                         disabled={selectedSkills.includes(skill) || selectedSkills.length >= 18}
-                        className="bg-[#011627ff] border-[#e25c28ff]/20 text-[#f1f7edff] hover:bg-[#011627ff] hover:text-[#e25c28ff]"
+                        className="border-success/50 text-muted-foreground hover:bg-success/10 hover:text-foreground"
                       >
                         {skill}
                         <Plus className="ml-2 h-4 w-4" />
@@ -364,38 +307,38 @@ const Dashboard = () => {
             </Card>
 
             {/* Job Applications */}
-            <Card id="jobs-for-you" className="border-2 border-border bg-[#011627ff]">
+            <Card className="border-2 border-border bg-card">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-[#e25c28ff]">Jobs for You</CardTitle>
-                  <Button variant="outline" size="sm" className="text-[#e25c28ff]">Most Relevant</Button>
+                  <CardTitle className="text-foreground">Jobs for You</CardTitle>
+                  <Button variant="outline" size="sm" className="text-foreground">Most Relevant</Button>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <Button variant="ghost" size="sm" className="text-[#e25c28ff]">Your Preferences</Button>
-                  <Button variant="ghost" size="sm" className="text-[#e25c28ff]">Your Priority</Button>
+                  <Button variant="ghost" size="sm" className="text-foreground">Your Preferences</Button>
+                  <Button variant="ghost" size="sm" className="text-foreground">Your Priority</Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {applications.map((app, index) => (
-                  <div key={index} className="border-2 border-border rounded-lg p-6 transition-all bg-[#011627ff]">
+                  <div key={index} className="border-2 border-border rounded-lg p-6 hover:border-primary/50 transition-all bg-card/50">
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <MapPin className="h-4 w-4 text-[#f1f7edff]" />
-                          <span className="text-sm text-[#f1f7edff]">{app.location}</span>
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">{app.location}</span>
                         </div>
-                        <h3 className="text-lg font-semibold text-[#e25c28ff] mb-2">{app.role}</h3>
-                        <p className="text-sm text-[#f1f7edff]">{app.company}</p>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">{app.role}</h3>
+                        <p className="text-sm text-muted-foreground">{app.company}</p>
                       </div>
                       <div className="flex flex-col items-center gap-2">
                         <div className="relative h-20 w-20">
                           <svg className="transform -rotate-90" width="80" height="80">
-                            <circle cx="40" cy="40" r="36" stroke="#02222cff" strokeWidth="6" fill="none" />
+                            <circle cx="40" cy="40" r="36" stroke="hsl(var(--border))" strokeWidth="6" fill="none" />
                             <circle 
                               cx="40" 
                               cy="40" 
                               r="36" 
-                              stroke="#e25c28ff" 
+                              stroke="hsl(var(--primary))" 
                               strokeWidth="6" 
                               fill="none" 
                               strokeDasharray={`${app.match * 2.26} 226`}
@@ -403,33 +346,33 @@ const Dashboard = () => {
                             />
                           </svg>
                           <div className="absolute inset-0 flex items-center justify-center flex-col">
-                            <span className="text-xl font-bold text-[#e25c28ff]">{app.match}%</span>
+                            <span className="text-xl font-bold text-foreground">{app.match}%</span>
                           </div>
                         </div>
-                        <span className="text-xs text-[#e25c28ff] font-semibold">Great Match</span>
+                        <span className="text-xs text-success font-semibold">Great Match</span>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                      <div className="flex items-center gap-2 text-[#f1f7edff]">
-                        <Calendar className="h-4 w-4 text-[#f1f7edff]" />
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="h-4 w-4" />
                         {app.type}
                       </div>
-                      <div className="flex items-center gap-2 text-[#f1f7edff]">
-                        <BarChart3 className="h-4 w-4 text-[#f1f7edff]" />
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <BarChart3 className="h-4 w-4" />
                         {app.salary}
                       </div>
-                      <div className="flex items-center gap-2 text-[#f1f7edff]">
-                        <Briefcase className="h-4 w-4 text-[#f1f7edff]" />
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Briefcase className="h-4 w-4" />
                         {app.level}
                       </div>
-                      <div className="flex items-center gap-2 text-[#f1f7edff]">
-                        <Award className="h-4 w-4 text-[#f1f7edff]" />
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Award className="h-4 w-4" />
                         {app.experience}
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <Badge className={`${getStatusBadge(app.status)} border`}>{app.status}</Badge>
-                      <Button className="bg-[#011627ff] border border-[#e25c28ff]/10 text-[#e25c28ff] hover:bg-[#011627ff]">Apply Now</Button>
+                      <Button className="bg-success hover:bg-success/90 text-success-foreground">Apply Now</Button>
                     </div>
                   </div>
                 ))}
@@ -440,10 +383,10 @@ const Dashboard = () => {
           {/* Right Column - AI Insights & Discover */}
           <div className="space-y-8">
             {/* AI Insights Card */}
-            <Card className="border-2 border-[#e25c28ff]/30 bg-[#011627ff]">
+            <Card className="border-2 border-primary/30 bg-card">
               <CardHeader>
-                <CardTitle className="text-[#e25c28ff] flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-[#e25c28ff]" />
+                <CardTitle className="text-foreground flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-primary" />
                   AI Insights
                 </CardTitle>
               </CardHeader>
@@ -451,16 +394,16 @@ const Dashboard = () => {
                 {/* Strengths */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-[#e25c28ff]" />
-                    <h4 className="font-semibold text-[#e25c28ff]">Strengths</h4>
+                    <TrendingUp className="h-4 w-4 text-success" />
+                    <h4 className="font-semibold text-foreground">Strengths</h4>
                   </div>
                   {aiInsights.strengths.map((strength, idx) => (
-                    <div key={idx} className="p-3 rounded-lg bg-[#02222cff] border border-[#073138]/20">
+                    <div key={idx} className="p-3 rounded-lg bg-success/10 border border-success/20">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm text-[#f1f7edff]">{strength.title}</p>
-                        <span className="text-xs font-bold text-[#f1f7edff]">{strength.score}%</span>
+                        <p className="font-medium text-sm text-foreground">{strength.title}</p>
+                        <span className="text-xs font-bold text-success">{strength.score}%</span>
                       </div>
-                      <p className="text-xs text-[#bcd8b0ff]">{strength.description}</p>
+                      <p className="text-xs text-muted-foreground">{strength.description}</p>
                     </div>
                   ))}
                 </div>
@@ -469,18 +412,18 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 text-warning" />
-                    <h4 className="font-semibold text-[#e25c28ff]">Weaknesses</h4>
+                    <h4 className="font-semibold text-foreground">Weaknesses</h4>
                   </div>
                   {aiInsights.weaknesses.map((weakness, idx) => (
-                    <div key={idx} className="p-3 rounded-lg bg-[#02222cff] border border-[#073138]/20">
+                    <div key={idx} className="p-3 rounded-lg bg-warning/10 border border-warning/20">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm text-[#f1f7edff]">{weakness.title}</p>
-                        <span className={weakness.impact === 'High' ? 'inline-flex items-center px-3 py-1 rounded-full bg-[#e25c28ff] text-white text-xs' : 'inline-flex items-center px-3 py-1 rounded-full bg-[#f1f7edff]/20 text-[#f1f7edff] text-xs'}>
+                        <p className="font-medium text-sm text-foreground">{weakness.title}</p>
+                        <Badge variant={weakness.impact === 'High' ? 'destructive' : 'secondary'} className="text-xs">
                           {weakness.impact}
-                        </span>
+                        </Badge>
                       </div>
-                      <p className="text-xs text-[#bcd8b0ff] mb-2">{weakness.description}</p>
-                      <Button variant="ghost" size="sm" className="h-7 text-xs text-[#e25c28ff]">
+                      <p className="text-xs text-muted-foreground mb-2">{weakness.description}</p>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs text-primary">
                         {weakness.action} <ArrowRight className="h-3 w-3 ml-1" />
                       </Button>
                     </div>
@@ -491,40 +434,40 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Lightbulb className="h-4 w-4 text-primary" />
-                    <h4 className="font-semibold text-[#e25c28ff]">Areas of Improvement</h4>
+                    <h4 className="font-semibold text-foreground">Areas of Improvement</h4>
                   </div>
                   {aiInsights.improvements.map((improvement, idx) => (
-                    <div key={idx} className="p-3 rounded-lg bg-[#02222cff] border border-[#073138]/20">
+                    <div key={idx} className="p-3 rounded-lg bg-primary/10 border border-primary/20">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm text-[#f1f7edff]">{improvement.title}</p>
-                        <span className={improvement.priority === 'High' ? 'inline-flex items-center px-3 py-1 rounded-full bg-[#e25c28ff] text-white text-xs' : 'inline-flex items-center px-3 py-1 rounded-full bg-[#f1f7edff]/20 text-[#f1f7edff] text-xs'}>
+                        <p className="font-medium text-sm text-foreground">{improvement.title}</p>
+                        <Badge className={improvement.priority === 'High' ? 'bg-destructive' : 'bg-warning'}>
                           {improvement.priority}
-                        </span>
+                        </Badge>
                       </div>
-                      <p className="text-xs text-[#bcd8b0ff] mb-1">{improvement.reason}</p>
-                      <p className="text-xs text-[#e25c28ff] font-semibold">{improvement.impact}</p>
+                      <p className="text-xs text-muted-foreground mb-1">{improvement.reason}</p>
+                      <p className="text-xs text-success font-semibold">{improvement.impact}</p>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Discover Student Section */}
-            <Card className="border-2 border-border bg-[#011627ff]">
-              <CardHeader className="bg-[#011627ff]">
-                <CardTitle className="text-[#e25c28ff] flex items-center gap-2">
+            {/* Discover Section */}
+            <Card className="border-2 border-border bg-card">
+              <CardHeader className="bg-success/10">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-success" />
                   DISCOVER
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 {discoverContent.map((item, idx) => (
-                  <div key={idx} className="p-4 border-b border-border last:border-b-0 transition-all">
-                    <Badge className="bg-[#011627ff] text-[#f1f7edff] border-[#e25c28ff]/40 mb-2 text-xs">
+                  <div key={idx} className="p-4 border-b border-border last:border-b-0 hover:bg-success/5 transition-all">
+                    <Badge className="bg-success/20 text-success border-success/40 mb-2 text-xs">
                       {item.category}
                     </Badge>
-                    <p className="text-sm text-[#e25c28ff] mb-2">{item.title}</p>
-                    <Button variant="link" className="text-[#e25c28ff] p-0 h-auto text-xs">
+                    <p className="text-sm text-foreground mb-2">{item.title}</p>
+                    <Button variant="link" className="text-success p-0 h-auto text-xs">
                       {item.action}
                     </Button>
                   </div>
@@ -532,35 +475,35 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Resume Upload */}
-            <Card id="ats-checker" className="border-2 border-border bg-[#011627ff]">
+            {/* Quick Actions */}
+            <Card className="border-2 border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-[#e25c28ff] flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  ATS Resume Scorer
+                <CardTitle className="text-foreground flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  Quick Actions
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-center p-6 border-2 border-dashed border-border rounded-lg hover:border-primary transition-all cursor-pointer bg-[#011627ff]">
-                  <div className="text-center space-y-3">
-                    <div className="h-12 w-12 rounded-full bg-[#011627ff] flex items-center justify-center mx-auto border border-[#e25c28ff]/20">
-                      <Upload className="h-6 w-6 text-[#e25c28ff]" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#e25c28ff] text-sm">Upload Resume</p>
-                      <p className="text-xs text-[#f1f7edff]">PDF, DOC (Max 5MB)</p>
-                    </div>
-                    <Button size="sm" className="bg-[#011627ff] border border-[#e25c28ff]/10 text-[#e25c28ff] hover:bg-[#011627ff]">Choose File</Button>
-                  </div>
-                </div>
-                <div className="p-4 rounded-lg bg-[#011627ff] border border-[#e25c28ff]/20">
-                  <p className="text-xs text-[#f1f7edff] mb-1">Current ATS Score</p>
-                  <div className="flex items-center justify-between">
-                    <p className={`text-2xl font-bold ${getScoreColor(resumeScore)}`}>{resumeScore}/100</p>
-                    <Award className="h-8 w-8 text-[#e25c28ff]" />
-                  </div>
-                  <Progress value={resumeScore} className="h-2 mt-2" />
-                </div>
+              <CardContent className="space-y-3">
+                <Button 
+                  className="w-full justify-start bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20"
+                  onClick={() => window.location.href = '/ats-checker'}
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Check ATS Score
+                </Button>
+                <Button 
+                  className="w-full justify-start bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20"
+                  onClick={() => window.location.href = '/settings'}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Update Preferences
+                </Button>
+                <Button 
+                  className="w-full justify-start bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Resume
+                </Button>
               </CardContent>
             </Card>
           </div>
