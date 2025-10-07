@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Download, FileText } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
 import { toast } from "sonner";
+import { exportMultipleSheets } from "@/utils/excelExport";
+import { exportAnalyticsToPDF } from "@/utils/pdfExport";
 
 const placementByBranch = [
   { branch: "CS", placed: 85, total: 100 },
@@ -31,11 +33,47 @@ const salaryTrends = [
 
 export default function Analytics() {
   const handleDownloadPDF = () => {
-    toast.success("Analytics report downloaded as PDF!");
+    try {
+      exportAnalyticsToPDF(placementByBranch, topRecruiters, salaryTrends);
+      toast.success("Analytics report downloaded as PDF successfully!");
+    } catch (error) {
+      toast.error("Failed to generate PDF");
+    }
   };
 
   const handleExportExcel = () => {
-    toast.success("Data exported to Excel successfully!");
+    try {
+      const sheets = [
+        {
+          name: 'Placement by Branch',
+          data: placementByBranch.map(item => ({
+            'Branch': item.branch,
+            'Placed Students': item.placed,
+            'Total Students': item.total,
+            'Placement %': ((item.placed / item.total) * 100).toFixed(2) + '%'
+          }))
+        },
+        {
+          name: 'Top Recruiters',
+          data: topRecruiters.map(item => ({
+            'Company': item.company,
+            'Total Offers': item.offers
+          }))
+        },
+        {
+          name: 'Salary Trends',
+          data: salaryTrends.map(item => ({
+            'Month': item.month,
+            'Average Salary (LPA)': item.avgSalary
+          }))
+        }
+      ];
+      
+      exportMultipleSheets(sheets, 'analytics_report');
+      toast.success("Analytics data exported to Excel successfully!");
+    } catch (error) {
+      toast.error("Failed to export analytics data");
+    }
   };
 
   return (
