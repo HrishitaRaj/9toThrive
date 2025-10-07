@@ -593,4 +593,48 @@ export const mockCandidates: CandidateProfile[] = [
     phssScore: 87,
     resume: "/resumes/tanvi_shah.pdf"
   }
+  ,
+  // generated additional candidates (23..72) with realistic names
+  ...(() => {
+    const names = [
+      "Aarav Mehta","Ishaan Kapoor","Saanvi Sharma","Anika Gupta","Vivaan Rao",
+      "Diya Patel","Krishna Nair","Kabir Singh","Mira Reddy","Aditya Menon",
+      "Neha Joshi","Rohan Malhotra","Tanvi Desai","Kabir Shah","Priyansh Varma",
+      "Kavya Iyer","Siddharth Reddy","Ritika Sen","Arjun Bhatia","Meera Nair",
+      "Ananya Kulkarni","Harsh Verma","Pooja Yadav","Nikhil Bhatt","Rhea Kapoor",
+      "Yash Gupta","Stuti Rao","Karan Mehra","Simran Kaur","Vikash Choudhary",
+      "Shruti Deshmukh","Aman Gill","Isha Rathi","Siddharth Kapoor","Naina Sharma",
+      "Rajat Sinha","Prachi Joshi","Devansh Patel","Sonal Sharma","Kunal Agarwal",
+      "Madhav Iyer","Anjali Nair","Tejas Bhatt","Leena Thomas","Rohit Kapoor",
+      "Esha Menon","Vivek Kumar","Nitika Singh","Adithya Rao","Siddharth Rao"
+    ];
+
+    const skillsPool = ["React","Node.js","TypeScript","Python","Django","Flask","Java","Spring","AWS","Docker","Kubernetes","SQL","MongoDB","CSS","HTML","Figma","Machine Learning","Pandas","NumPy","TensorFlow"];
+
+    return Array.from({ length: 50 }).map((_, idx) => {
+      const i = 23 + idx;
+      const name = names[idx % names.length];
+      const topSkills = [skillsPool[idx % skillsPool.length], skillsPool[(idx + 3) % skillsPool.length], skillsPool[(idx + 7) % skillsPool.length]];
+      return {
+        id: String(i),
+        name,
+        email: `${name.toLowerCase().replace(/\s+/g, '.')}${i}@example.edu`,
+        college: ["IIT Delhi","IIT Bombay","BITS Pilani","NIT Trichy","IIIT Hyderabad"][i % 5],
+        branch: ["Computer Science","Information Technology","Electronics","Mechanical"][i % 4],
+        cgpa: +((7 + (i % 30) * 0.08).toFixed(2)),
+        skills: topSkills,
+        experience: +(i % 6),
+        projects: [
+          {
+            title: `Project ${i}A`,
+            description: `Project ${i}A description showcasing ${topSkills[0]} work and impact.`,
+            technologies: [topSkills[0], topSkills[1]],
+            duration: `${1 + (i % 6)} months`
+          }
+        ],
+        phssScore: 60 + (i % 40),
+        resume: `/resumes/candidate_${i}.pdf`
+      };
+    });
+  })()
 ];

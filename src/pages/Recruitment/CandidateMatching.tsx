@@ -40,6 +40,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { localMatchingService } from "@/pages/Recruitment/Services/localMatchingService";
 import { MatchResult, MatchResponse } from "@/pages/Recruitment/types/matching.types";
 import { useToast } from "@/hooks/use-toast";
+import { mockCandidates } from "@/pages/Recruitment/data/mockCandidates";
 
 export default function CandidateMatching() {
   const [searchParams] = useSearchParams();
@@ -72,6 +73,28 @@ export default function CandidateMatching() {
           title: "Loaded Latest Results",
           description: "Showing your most recent match calculation",
         });
+      } else {
+        // No saved results — show all mock candidates as default view
+        const allAsResults = mockCandidates.map((c, idx) => ({
+          candidateId: String(c.id),
+          candidate: c,
+          overallScore: c.phssScore || 0,
+          matchedSkills: c.skills || [],
+          missingSkills: [],
+          status: 'new' as const,
+          rank: idx + 1,
+          breakdown: {
+            skillScore: c.phssScore || 0,
+            experienceScore: Math.min(100, (c.experience || 0) * 10),
+            projectScore: 50,
+          },
+        }));
+
+        setFilteredResults(allAsResults as MatchResult[]);
+        toast({
+          title: "Showing All Candidates",
+          description: "No previous match calculations found — displaying full candidate list",
+        });
       }
       setLoading(false);
     }
@@ -82,6 +105,48 @@ export default function CandidateMatching() {
       applyFilters();
     }
   }, [filters, matchData]);
+
+  // Merge accepted candidates saved from QuickHire into the filtered results
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("acceptedCandidates") || "[]");
+      if (stored && Array.isArray(stored) && stored.length > 0) {
+        // map to minimal MatchResult objects
+        const acceptedDetails: MatchResult[] = stored
+          .map((id: number | string) => {
+            const c = mockCandidates.find((m) => Number(m.id) === Number(id));
+            if (!c) return null;
+            const res: any = {
+              candidateId: String(c.id),
+              candidate: c,
+              overallScore: c.phssScore || 0,
+              matchedSkills: c.skills || [],
+              missingSkills: [],
+              status: "shortlisted",
+              rank: null,
+              breakdown: {
+                skillScore: c.phssScore || 0,
+                experienceScore: Math.min(100, (c.experience || 0) * 10),
+                projectScore: 50,
+              },
+            } as MatchResult;
+            return res;
+          })
+          .filter(Boolean) as MatchResult[];
+
+        if (acceptedDetails.length > 0) {
+          setFilteredResults((prev) => {
+            // dedupe by candidateId
+            const ids = new Set(prev.map((r) => r.candidateId));
+            const toAdd = acceptedDetails.filter((r) => !ids.has(r.candidateId));
+            return [...toAdd, ...prev];
+          });
+        }
+      }
+    } catch (e) {
+      // ignore parse errors
+    }
+  }, []);
 
   const loadMatchResults = async (jobId: string) => {
     setLoading(true);

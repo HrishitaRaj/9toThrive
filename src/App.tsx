@@ -27,14 +27,13 @@ import Analytics from "./pages/Placement/Analytics";
 import Communication from "./pages/Placement/Communication";
 import Settings from "./pages/Placement/Settings";
 
-
-
 // Recruitment dashboard imports
 import { RecruitmentLayout } from "./components/layout/RecruitmentLayout";
 import DashboardRec from "./pages/Recruitment/DashboardRec";
 import JobPosting from "./pages/Recruitment/JobPosting";
 import MatchCalculator from "./pages/Recruitment/MatchCalculator";
 import CandidateMatching from "./pages/Recruitment/CandidateMatching";
+import QuickHire from "./pages/Recruitment/QuickHire";
 import EligibilityCriteria from "./pages/Recruitment/EligibilityCriteria";
 import CommunicationRec from "./pages/Recruitment/Communication";
 import Reports from "./pages/Recruitment/Reports";
@@ -109,6 +108,7 @@ const App = () => (
               <Route path="eligibility" element={<EligibilityCriteria />} />
               <Route path="calculator" element={<MatchCalculator />} />
               <Route path="matching" element={<CandidateMatching />} />
+              <Route path="quick-hire" element={<QuickHire />} />
               <Route path="communication" element={<CommunicationRec />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<SettingsRec />} />

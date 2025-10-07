@@ -19,7 +19,7 @@ export function useMatching() {
   const [error, setError] = useState<string | null>(null);
 
   const calculateMatches = useCallback(
-    async (jobCriteria: JobCriteria, candidateIds?: string[]) => {
+    async (jobCriteria: JobCriteria, candidates?: any[]) => {
       setStatus({
         status: 'calculating',
         progress: 10,
@@ -42,7 +42,9 @@ export function useMatching() {
           message: 'Analyzing skills and experience with AI...',
         });
 
-        const response = await localMatchingService.calculateMatches(jobCriteria);
+  // If a candidate list is provided, pass it through to the local service so
+  // calculations run over the provided set (defaults to all mockCandidates).
+  const response = await localMatchingService.calculateMatches(jobCriteria, candidates);
 
         setStatus({
           status: 'calculating',
