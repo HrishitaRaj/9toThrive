@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { 
-  FileText, Upload, TrendingUp, Briefcase, Target, Award, 
-  Brain, CheckCircle2, AlertCircle, Star, ArrowRight, 
+import {
+  FileText, Upload, TrendingUp, Briefcase, Target, Award,
+  Brain, CheckCircle2, AlertCircle, Star, ArrowRight,
   BarChart3, Calendar, Zap, Eye, Download, Settings,
   Sparkles, TrendingDown, MapPin, X, Plus, Lightbulb, Menu
 } from "lucide-react";
@@ -114,6 +114,11 @@ const Dashboard = () => {
     };
     return variants[status] || "bg-muted";
   };
+  
+  // Function to check if user has a skill
+  const hasSkill = (skill: string): boolean => {
+    return selectedSkills.includes(skill);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,8 +136,8 @@ const Dashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Profile Score</p>
-                  <p className="text-3xl font-bold text-foreground">{profileCompletion}%</p>
+                  <p className="text-sm text-white/70">Profile Score</p>
+                  <p className="text-3xl font-bold text-white">{profileCompletion}%</p>
                   <Progress value={profileCompletion} className="h-2 mt-2" />
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -146,7 +151,7 @@ const Dashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">ATS Score</p>
+                  <p className="text-sm text-white/70">ATS Score</p>
                   <p className={`text-3xl font-bold ${getScoreColor(resumeScore)}`}>{resumeScore}%</p>
                   <div className="flex items-center gap-2 mt-2">
                     <TrendingUp className="h-4 w-4 text-success" />
@@ -164,9 +169,9 @@ const Dashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Applications</p>
-                  <p className="text-3xl font-bold text-foreground">24</p>
-                  <p className="text-xs text-muted-foreground mt-2">4 active interviews</p>
+                  <p className="text-sm text-white/70">Applications</p>
+                  <p className="text-3xl font-bold text-white">24</p>
+                  <p className="text-xs text-white/70 mt-2">4 active interviews</p>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center">
                   <Briefcase className="h-6 w-6 text-success" />
@@ -179,9 +184,9 @@ const Dashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Job Matches</p>
-                  <p className="text-3xl font-bold text-foreground">47</p>
-                  <p className="text-xs text-muted-foreground mt-2">New opportunities</p>
+                  <p className="text-sm text-white/70">Job Matches</p>
+                  <p className="text-3xl font-bold text-white">47</p>
+                  <p className="text-xs text-white/70 mt-2">New opportunities</p>
                 </div>
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Sparkles className="h-6 w-6 text-primary" />
@@ -198,7 +203,7 @@ const Dashboard = () => {
             {/* Job Titles */}
             <Card className="border-2 border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-foreground flex items-center gap-2">
+                <CardTitle className="text-white flex items-center gap-2">
                   <Briefcase className="h-5 w-5" />
                   Job Titles
                   <Badge variant="secondary" className="ml-2">max 3 job titles</Badge>
@@ -220,7 +225,7 @@ const Dashboard = () => {
                       value={newJobTitle}
                       onChange={(e) => setNewJobTitle(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && addJobTitle()}
-                      className="bg-input border-border text-foreground"
+                      className="bg-input border-border text-white"
                     />
                     <Button onClick={addJobTitle} size="icon" className="bg-primary hover:bg-primary/90">
                       <Plus className="h-4 w-4" />
@@ -233,7 +238,7 @@ const Dashboard = () => {
             {/* Top Skills */}
             <Card className="border-2 border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-foreground flex items-center gap-2">
+                <CardTitle className="text-white flex items-center gap-2">
                   <Star className="h-5 w-5" />
                   Top Skills
                   <Badge variant="secondary" className="ml-2">max 18 skills</Badge>
@@ -255,7 +260,7 @@ const Dashboard = () => {
                       value={newSkill}
                       onChange={(e) => setNewSkill(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && addSkill()}
-                      className="bg-input border-border text-foreground"
+                      className="bg-input border-border text-white"
                     />
                     <Button onClick={addSkill} size="icon" className="bg-primary hover:bg-primary/90">
                       <Plus className="h-4 w-4" />
@@ -268,14 +273,14 @@ const Dashboard = () => {
             {/* AI Recommendations */}
             <Card className="border-2 border-success/30 bg-card">
               <CardHeader>
-                <CardTitle className="text-foreground flex items-center gap-2">
+                <CardTitle className="text-white flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-success" />
                   AI Recommendations
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-3">Select recommended Job Titles</p>
+                  <p className="text-sm text-white/70 mb-3">Select recommended Job Titles</p>
                   <div className="flex flex-wrap gap-2">
                     {recommendedJobTitles.map((title) => (
                       <Button
@@ -284,7 +289,7 @@ const Dashboard = () => {
                         size="sm"
                         onClick={() => addRecommendedJobTitle(title)}
                         disabled={selectedJobTitles.includes(title) || selectedJobTitles.length >= 3}
-                        className="border-success/50 text-muted-foreground hover:bg-success/10 hover:text-foreground"
+                        className="border-success/50 text-white/70 hover:bg-success/10 hover:text-white"
                       >
                         {title}
                         <Plus className="ml-2 h-4 w-4" />
@@ -293,7 +298,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-3">Select recommended Skills</p>
+                  <p className="text-sm text-white/70 mb-3">Select recommended Skills</p>
                   <div className="flex flex-wrap gap-2">
                     {recommendedSkills.map((skill) => (
                       <Button
@@ -302,7 +307,7 @@ const Dashboard = () => {
                         size="sm"
                         onClick={() => addRecommendedSkill(skill)}
                         disabled={selectedSkills.includes(skill) || selectedSkills.length >= 18}
-                        className="border-success/50 text-muted-foreground hover:bg-success/10 hover:text-foreground"
+                        className="border-success/50 text-white/70 hover:bg-success/10 hover:text-white"
                       >
                         {skill}
                         <Plus className="ml-2 h-4 w-4" />
@@ -313,86 +318,10 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Job Applications */}
-            <Card className="border-2 border-border bg-card">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-foreground">Jobs for You</CardTitle>
-                  <Button variant="outline" size="sm" className="text-foreground">Most Relevant</Button>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button variant="ghost" size="sm" className="text-foreground">Your Preferences</Button>
-                  <Button variant="ghost" size="sm" className="text-foreground">Your Priority</Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {applications.map((app, index) => (
-                  <div key={index} className="border-2 border-border rounded-lg p-6 hover:border-primary/50 transition-all bg-card/50">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">{app.location}</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-2">{app.role}</h3>
-                        <p className="text-sm text-muted-foreground">{app.company}</p>
-                      </div>
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="relative h-20 w-20">
-                          <svg className="transform -rotate-90" width="80" height="80">
-                            <circle cx="40" cy="40" r="36" stroke="hsl(var(--border))" strokeWidth="6" fill="none" />
-                            <circle 
-                              cx="40" 
-                              cy="40" 
-                              r="36" 
-                              stroke="hsl(var(--primary))" 
-                              strokeWidth="6" 
-                              fill="none" 
-                              strokeDasharray={`${app.match * 2.26} 226`}
-                              className="transition-all"
-                            />
-                          </svg>
-                          <div className="absolute inset-0 flex items-center justify-center flex-col">
-                            <span className="text-xl font-bold text-foreground">{app.match}%</span>
-                          </div>
-                        </div>
-                        <span className="text-xs text-success font-semibold">Great Match</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        {app.type}
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <BarChart3 className="h-4 w-4" />
-                        {app.salary}
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Briefcase className="h-4 w-4" />
-                        {app.level}
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Award className="h-4 w-4" />
-                        {app.experience}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Badge className={`${getStatusBadge(app.status)} border`}>{app.status}</Badge>
-                      <Button className="bg-success hover:bg-success/90 text-success-foreground">Apply Now</Button>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column - AI Insights & Discover */}
-          <div className="space-y-8">
-            {/* AI Insights Card */}
+            {/* AI Insights Card - Moved to main section */}
             <Card className="border-2 border-primary/30 bg-card">
               <CardHeader>
-                <CardTitle className="text-foreground flex items-center gap-2">
+                <CardTitle className="text-white flex items-center gap-2">
                   <Brain className="h-5 w-5 text-primary" />
                   AI Insights
                 </CardTitle>
@@ -402,15 +331,15 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-success" />
-                    <h4 className="font-semibold text-foreground">Strengths</h4>
+                    <h4 className="font-semibold text-white">Strengths</h4>
                   </div>
                   {aiInsights.strengths.map((strength, idx) => (
                     <div key={idx} className="p-3 rounded-lg bg-success/10 border border-success/20">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm text-foreground">{strength.title}</p>
+                        <p className="font-medium text-sm text-white">{strength.title}</p>
                         <span className="text-xs font-bold text-success">{strength.score}%</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">{strength.description}</p>
+                      <p className="text-xs text-white">{strength.description}</p>
                     </div>
                   ))}
                 </div>
@@ -419,17 +348,17 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 text-warning" />
-                    <h4 className="font-semibold text-foreground">Weaknesses</h4>
+                    <h4 className="font-semibold text-white">Weaknesses</h4>
                   </div>
                   {aiInsights.weaknesses.map((weakness, idx) => (
                     <div key={idx} className="p-3 rounded-lg bg-warning/10 border border-warning/20">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm text-foreground">{weakness.title}</p>
+                        <p className="font-medium text-sm text-white">{weakness.title}</p>
                         <Badge variant={weakness.impact === 'High' ? 'destructive' : 'secondary'} className="text-xs">
                           {weakness.impact}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground mb-2">{weakness.description}</p>
+                      <p className="text-xs text-white mb-2">{weakness.description}</p>
                       <Button variant="ghost" size="sm" className="h-7 text-xs text-primary">
                         {weakness.action} <ArrowRight className="h-3 w-3 ml-1" />
                       </Button>
@@ -441,23 +370,27 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Lightbulb className="h-4 w-4 text-primary" />
-                    <h4 className="font-semibold text-foreground">Areas of Improvement</h4>
+                    <h4 className="font-semibold text-white">Areas of Improvement</h4>
                   </div>
                   {aiInsights.improvements.map((improvement, idx) => (
                     <div key={idx} className="p-3 rounded-lg bg-primary/10 border border-primary/20">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm text-foreground">{improvement.title}</p>
+                        <p className="font-medium text-sm text-white">{improvement.title}</p>
                         <Badge className={improvement.priority === 'High' ? 'bg-destructive' : 'bg-warning'}>
                           {improvement.priority}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground mb-1">{improvement.reason}</p>
+                      <p className="text-xs text-white mb-1">{improvement.reason}</p>
                       <p className="text-xs text-success font-semibold">{improvement.impact}</p>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Right Column - Discover */}
+          <div className="space-y-8">
 
             {/* Discover Section */}
             <Card className="border-2 border-border bg-card">
@@ -473,7 +406,7 @@ const Dashboard = () => {
                     <Badge className="bg-success/20 text-success border-success/40 mb-2 text-xs">
                       {item.category}
                     </Badge>
-                    <p className="text-sm text-foreground mb-2">{item.title}</p>
+                    <p className="text-sm text-white mb-2">{item.title}</p>
                     <Button variant="link" className="text-success p-0 h-auto text-xs">
                       {item.action}
                     </Button>
@@ -482,31 +415,33 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
+            {/* Additional resources or announcements card can be added here */}
+
+            {/* Quick Actions - Text changed to white */}
             <Card className="border-2 border-border bg-card">
               <CardHeader>
-                <CardTitle className="text-foreground flex items-center gap-2">
+                <CardTitle className="text-white flex items-center gap-2">
                   <Zap className="h-5 w-5" />
                   Quick Actions
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button 
-                  className="w-full justify-start bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20"
+                  className="w-full justify-start bg-primary/10 border border-primary/20 text-white hover:bg-primary/20"
                   onClick={() => window.location.href = '/ats-checker'}
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   Check ATS Score
                 </Button>
                 <Button 
-                  className="w-full justify-start bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20"
+                  className="w-full justify-start bg-primary/10 border border-primary/20 text-white hover:bg-primary/20"
                   onClick={() => window.location.href = '/settings'}
                 >
                   <Settings className="h-4 w-4 mr-2" />
                   Update Preferences
                 </Button>
                 <Button 
-                  className="w-full justify-start bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20"
+                  className="w-full justify-start bg-primary/10 border border-primary/20 text-white hover:bg-primary/20"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Download Resume
