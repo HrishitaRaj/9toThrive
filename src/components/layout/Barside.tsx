@@ -28,7 +28,7 @@ export const Sidebar = () => {
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-screen sticky top-0">
       <div className="p-6 border-b border-sidebar-border">
-        <h1 className="text-2xl font-bold text-primary">RecruIT</h1>
+        <h1 className="text-2xl font-bold text-primary">Recruiter</h1>
         <p className="text-xs text-muted-foreground mt-1">AI-Powered Recruitment</p>
       </div>
 
