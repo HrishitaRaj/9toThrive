@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { PageHeader } from "@/components/Placement/PageHeader";
 import { DataTable } from "@/components/Placement/Datatable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Download, Plus } from "lucide-react";
+import { Calendar, Download } from "lucide-react";
 import { toast } from "sonner";
+import { exportToExcel } from "@/utils/excelExport";
+import { PostJobDialog } from "@/components/Placement/PostJobDialog";
 
 interface Job {
   id: string;
@@ -64,12 +67,37 @@ const mockJobs: Job[] = [
 ];
 
 export default function Jobs() {
+  const [jobs, setJobs] = useState<Job[]>(mockJobs);
+
+  const handleJobPosted = (newJob: Omit<Job, "id">) => {
+    const job = {
+      ...newJob,
+      id: (jobs.length + 1).toString(),
+    };
+    setJobs(prev => [...prev, job]);
+  };
+
   const handleScheduleDrive = (jobTitle: string) => {
     toast.success(`Placement drive scheduled for ${jobTitle}`);
   };
 
   const handleExport = () => {
-    toast.success("Job listings exported to Excel successfully!");
+    try {
+      const exportData = jobs.map(job => ({
+        'Job ID': job.id,
+        'Job Title': job.jobTitle,
+        'Recruiter': job.recruiter,
+        'Applicants': job.applicants,
+        'Drive Date': job.driveDate,
+        'Salary': job.salary,
+        'Location': job.location,
+      }));
+      
+      exportToExcel(exportData, 'jobs_list', 'Jobs');
+      toast.success("Job listings exported to Excel successfully!");
+    } catch (error) {
+      toast.error("Failed to export jobs");
+    }
   };
 
   const columns = [
@@ -116,16 +144,13 @@ export default function Jobs() {
               <Download className="w-4 h-4 mr-2" />
               Export to Excel
             </Button>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Post Job
-            </Button>
+            <PostJobDialog onJobPosted={handleJobPosted} />
           </>
         }
       />
 
       <div className="mt-6">
-        <DataTable data={mockJobs} columns={columns} />
+        <DataTable data={jobs} columns={columns} />
       </div>
     </div>
   );

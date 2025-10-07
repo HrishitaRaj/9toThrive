@@ -7,19 +7,44 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
+import emailjs from "emailjs-com";
 
 export default function Communication() {
   const [message, setMessage] = useState("");
   const [audience, setAudience] = useState("all");
+  const [sending, setSending] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!message.trim()) {
       toast.error("Please enter a message before sending!");
       return;
     }
     
-    toast.success(`Notification sent to ${audience === "all" ? "all students" : audience}!`);
-    setMessage("");
+    setSending(true);
+
+    try {
+      // Note: Users need to configure EmailJS with their service ID, template ID, and user ID
+      // This is a placeholder implementation
+      toast.info("Email service not configured. Please set up EmailJS credentials.");
+      
+      // Uncomment and configure when EmailJS is set up:
+      // await emailjs.send(
+      //   'YOUR_SERVICE_ID',
+      //   'YOUR_TEMPLATE_ID',
+      //   {
+      //     audience: audience,
+      //     message: message,
+      //   },
+      //   'YOUR_USER_ID'
+      // );
+      
+      toast.success(`Notification sent to ${audience === "all" ? "all students" : audience}!`);
+      setMessage("");
+    } catch (error) {
+      toast.error("Failed to send notification");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -67,9 +92,9 @@ export default function Communication() {
           </div>
 
           {/* Send Button */}
-          <Button onClick={handleSend} className="w-full sm:w-auto">
+          <Button onClick={handleSend} className="w-full sm:w-auto" disabled={sending}>
             <Send className="w-4 h-4 mr-2" />
-            Send Notification
+            {sending ? "Sending..." : "Send Notification"}
           </Button>
 
           {/* Info Box */}
