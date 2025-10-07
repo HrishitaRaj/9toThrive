@@ -20,6 +20,7 @@ import {
 import { useState, useEffect } from "react";
 import { JobCriteria } from "@/pages/Recruitment/types/matching.types";
 import { useMatching } from "@/pages/Recruitment/hooks/useMatching";
+import { mockCandidates } from '@/pages/Recruitment/data/mockCandidates';
 import { useToast } from "@/hooks/use-toast";
 import { MatchProgress } from "@/pages/Recruitment/Components/MatchProgress";
 

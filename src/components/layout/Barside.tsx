@@ -7,7 +7,8 @@ import {
   BarChart3, 
   MessageSquare, 
   FileText, 
-  Settings 
+  Settings, 
+  Lightbulb
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,7 @@ const navItems = [
   { title: "Eligibility Criteria", path: "eligibility", icon: UserCheck },
   { title: "Match Calculator", path: "calculator", icon: BarChart3 },
   { title: "Candidate Matching", path: "matching", icon: Users },
+  { title: "Quick Hire", path: "quick-hire", icon: Lightbulb },
   { title: "Communication", path: "communication", icon: MessageSquare },
   { title: "Reports", path: "reports", icon: FileText },
   { title: "Settings", path: "settings", icon: Settings },
