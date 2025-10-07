@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/layout/PageHeaderRec";
 import { StatCard } from "@/components/Recruitment/Card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Download, FileText, TrendingUp, Clock, Award, Users } from "lucide-react";
+import { Download, FileText, Clock, Award, Users } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -44,13 +44,13 @@ const skillGapData = [
 
 export default function Reports() {
   return (
-    <div>
+    <div className="p-6 md:p-8">
       <PageHeader
         title="Reports"
         description="AI insights and comprehensive hiring trends"
         actions={
           <>
-            <Button variant="outline">
+            <Button variant="outline" className="mr-2">
               <Download className="w-4 h-4 mr-2" />
               Export Excel
             </Button>
@@ -62,67 +62,75 @@ export default function Reports() {
         }
       />
 
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {stats.map((stat) => (
           <StatCard key={stat.title} {...stat} />
         ))}
       </div>
 
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6 bg-gradient-card shadow-card border-border">
-          <h3 className="text-lg font-semibold text-foreground mb-4">
+        {/* Top Performing Roles */}
+        <Card className="p-6 md:p-8 bg-gradient-card shadow-card border-border">
+          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-6">
             Top Performing Roles
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={topRoles} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-              <YAxis dataKey="role" type="category" stroke="hsl(var(--muted-foreground))" />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
-                }}
-              />
-              <Bar dataKey="hired" fill="#e25c28" radius={[0, 8, 8, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="w-full h-[300px] px-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={topRoles} layout="vertical" margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                <YAxis dataKey="role" type="category" stroke="hsl(var(--muted-foreground))" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                  }}
+                />
+                <Bar dataKey="hired" fill="#e25c28" radius={[0, 8, 8, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
 
-        <Card className="p-6 bg-gradient-card shadow-card border-border">
-          <h3 className="text-lg font-semibold text-foreground mb-4">
+        {/* Skill Gap Analysis */}
+        <Card className="p-6 md:p-8 bg-gradient-card shadow-card border-border">
+          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-6">
             Skill Gap Analysis
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={skillGapData}>
-              <PolarGrid stroke="hsl(var(--border))" />
-              <PolarAngleAxis dataKey="skill" stroke="hsl(var(--muted-foreground))" />
-              <PolarRadiusAxis stroke="hsl(var(--muted-foreground))" />
-              <Radar
-                name="Market Demand"
-                dataKey="demand"
-                stroke="#e25c28"
-                fill="#e25c28"
-                fillOpacity={0.3}
-              />
-              <Radar
-                name="Candidate Supply"
-                dataKey="supply"
-                stroke="#3b82f6"
-                fill="#3b82f6"
-                fillOpacity={0.3}
-              />
-              <Legend />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
-                }}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
+          <div className="w-full h-[300px] px-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={skillGapData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+                <PolarGrid stroke="hsl(var(--border))" />
+                <PolarAngleAxis dataKey="skill" stroke="hsl(var(--muted-foreground))" />
+                <PolarRadiusAxis stroke="hsl(var(--muted-foreground))" />
+                <Radar
+                  name="Market Demand"
+                  dataKey="demand"
+                  stroke="#e25c28"
+                  fill="#e25c28"
+                  fillOpacity={0.3}
+                />
+                <Radar
+                  name="Candidate Supply"
+                  dataKey="supply"
+                  stroke="#3b82f6"
+                  fill="#3b82f6"
+                  fillOpacity={0.3}
+                />
+                <Legend />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                  }}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
       </div>
     </div>

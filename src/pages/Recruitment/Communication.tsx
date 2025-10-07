@@ -98,7 +98,7 @@ const columns = [
 
 export default function Communication() {
   return (
-    <div>
+    <div className="p-6 md:p-8">
       <PageHeader
         title="Placement Cell Communication"
         description="Coordinate with college placement offices for recruitment activities"
