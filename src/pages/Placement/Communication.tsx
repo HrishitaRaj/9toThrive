@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/Placement/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,12 +7,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
-import emailjs from "emailjs-com";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Communication() {
   const [message, setMessage] = useState("");
   const [audience, setAudience] = useState("all");
+  const [notificationType, setNotificationType] = useState<"email" | "sms" | "dashboard">("email");
   const [sending, setSending] = useState(false);
+  const [students, setStudents] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  const fetchStudents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('students')
+        .select('id, name, email, branch, verification_status');
+      
+      if (error) throw error;
+      setStudents(data || []);
+    } catch (error: any) {
+      console.error('Failed to fetch students:', error);
+    }
+  };
 
   const handleSend = async () => {
     if (!message.trim()) {
@@ -23,25 +42,35 @@ export default function Communication() {
     setSending(true);
 
     try {
-      // Note: Users need to configure EmailJS with their service ID, template ID, and user ID
-      // This is a placeholder implementation
-      toast.info("Email service not configured. Please set up EmailJS credentials.");
+      // Filter students based on audience
+      let targetStudents = students;
+      if (audience !== "all") {
+        if (audience === "verified") {
+          targetStudents = students.filter(s => s.verification_status === "verified");
+        } else if (audience === "unverified") {
+          targetStudents = students.filter(s => s.verification_status === "unverified");
+        } else {
+          targetStudents = students.filter(s => s.branch === audience);
+        }
+      }
+
+      const studentIds = targetStudents.map(s => s.id);
+
+      const { data, error } = await supabase.functions.invoke('send-notification', {
+        body: {
+          studentIds,
+          message,
+          type: notificationType
+        }
+      });
+
+      if (error) throw error;
       
-      // Uncomment and configure when EmailJS is set up:
-      // await emailjs.send(
-      //   'YOUR_SERVICE_ID',
-      //   'YOUR_TEMPLATE_ID',
-      //   {
-      //     audience: audience,
-      //     message: message,
-      //   },
-      //   'YOUR_USER_ID'
-      // );
-      
-      toast.success(`Notification sent to ${audience === "all" ? "all students" : audience}!`);
+      toast.success(data.message || `Notification sent to ${audience === "all" ? "all students" : audience}!`);
       setMessage("");
-    } catch (error) {
-      toast.error("Failed to send notification");
+    } catch (error: any) {
+      console.error('Send notification error:', error);
+      toast.error(error.message || "Failed to send notification");
     } finally {
       setSending(false);
     }
@@ -71,6 +100,21 @@ export default function Communication() {
                 <SelectItem value="Civil">Civil</SelectItem>
                 <SelectItem value="verified">Verified Students Only</SelectItem>
                 <SelectItem value="unverified">Unverified Students</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Notification Type */}
+          <div className="space-y-2">
+            <Label htmlFor="notificationType">Notification Type</Label>
+            <Select value={notificationType} onValueChange={(value: any) => setNotificationType(value)}>
+              <SelectTrigger id="notificationType">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="sms">SMS Alert</SelectItem>
+                <SelectItem value="dashboard">Dashboard Alert</SelectItem>
               </SelectContent>
             </Select>
           </div>

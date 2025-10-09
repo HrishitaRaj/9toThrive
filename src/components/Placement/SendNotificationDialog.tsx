@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
-import emailjs from "emailjs-com";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Student {
   id: string;
@@ -46,27 +46,28 @@ export function SendNotificationDialog({ students }: SendNotificationDialogProps
     setSending(true);
 
     try {
-      // Note: Users need to configure EmailJS with their service ID, template ID, and user ID
-      // This is a placeholder implementation
-      toast.info("Email service not configured. Please set up EmailJS credentials.");
+      // Get student IDs from selected emails
+      const selectedStudentIds = studentsWithEmail
+        .filter(s => selectedEmails.includes(s.email!))
+        .map(s => s.id);
+
+      const { data, error } = await supabase.functions.invoke('send-notification', {
+        body: {
+          studentIds: selectedStudentIds,
+          message,
+          type: 'email'
+        }
+      });
+
+      if (error) throw error;
       
-      // Uncomment and configure when EmailJS is set up:
-      // await emailjs.send(
-      //   'YOUR_SERVICE_ID',
-      //   'YOUR_TEMPLATE_ID',
-      //   {
-      //     to_emails: selectedEmails.join(','),
-      //     message: message,
-      //   },
-      //   'YOUR_USER_ID'
-      // );
-      
-      toast.success(`Notification sent to ${selectedEmails.length} student(s)!`);
+      toast.success(data.message || `Notification sent to ${selectedEmails.length} student(s)!`);
       setMessage("");
       setSelectedEmails([]);
       setOpen(false);
-    } catch (error) {
-      toast.error("Failed to send notifications");
+    } catch (error: any) {
+      console.error('Send notification error:', error);
+      toast.error(error.message || "Failed to send notifications");
     } finally {
       setSending(false);
     }
