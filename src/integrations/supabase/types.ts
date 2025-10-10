@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      company_rounds: {
+        Row: {
+          company_name: string
+          created_at: string | null
+          current_stage: string
+          id: string
+          job_role: string
+          stages: Json | null
+          students_qualified: Json | null
+          total_applicants: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string | null
+          current_stage?: string
+          id?: string
+          job_role: string
+          stages?: Json | null
+          students_qualified?: Json | null
+          total_applicants?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string | null
+          current_stage?: string
+          id?: string
+          job_role?: string
+          stages?: Json | null
+          students_qualified?: Json | null
+          total_applicants?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           applicants: number | null
@@ -26,6 +62,7 @@ export type Database = {
           location: string | null
           role: string
           salary: string | null
+          scheduled_date: string | null
           status: string
           title: string
           updated_at: string | null
@@ -41,6 +78,7 @@ export type Database = {
           location?: string | null
           role: string
           salary?: string | null
+          scheduled_date?: string | null
           status?: string
           title: string
           updated_at?: string | null
@@ -56,6 +94,7 @@ export type Database = {
           location?: string | null
           role?: string
           salary?: string | null
+          scheduled_date?: string | null
           status?: string
           title?: string
           updated_at?: string | null
@@ -96,6 +135,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      placement_officers: {
+        Row: {
+          assigned_companies: string[] | null
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_companies?: string[] | null
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_companies?: string[] | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       recruiters: {
         Row: {

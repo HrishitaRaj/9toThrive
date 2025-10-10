@@ -2,9 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PlacementLayout } from "./components/layout/PlacementLayout";
 import Dashboard from "./pages/Placement/Dashboard";
 import Students from "./pages/Placement/Students";
@@ -13,6 +11,9 @@ import Jobs from "./pages/Placement/Jobs";
 import Analytics from "./pages/Placement/Analytics";
 import Communication from "./pages/Placement/Communication";
 import Settings from "./pages/Placement/Settings";
+import CalendarPage from "./pages/Placement/Calendar";
+import RecruitmentTracking from "./pages/Placement/RecruitmentTracking";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Navigate to="/placement" replace />} />
           <Route path="/placement" element={<PlacementLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="students" element={<Students />} />
@@ -31,9 +32,10 @@ const App = () => (
             <Route path="jobs" element={<Jobs />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="communication" element={<Communication />} />
+            <Route path="calendar" element={<CalendarPage />} />
+            <Route path="recruitment-tracking" element={<RecruitmentTracking />} />
             <Route path="settings" element={<Settings />} />
           </Route>
-          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

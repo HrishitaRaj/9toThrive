@@ -22,6 +22,7 @@ export function SendNotificationDialog({ students }: SendNotificationDialogProps
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  const [manualEmails, setManualEmails] = useState("");
   const [sending, setSending] = useState(false);
 
   const studentsWithEmail = students.filter(s => s.email);
@@ -38,17 +39,24 @@ export function SendNotificationDialog({ students }: SendNotificationDialogProps
       return;
     }
 
-    if (selectedEmails.length === 0) {
-      toast.error("Please select at least one student");
+    const manualEmailList = manualEmails
+      .split(/[,;\n]/)
+      .map(e => e.trim())
+      .filter(e => e && e.includes('@'));
+    
+    const allEmails = [...new Set([...selectedEmails, ...manualEmailList])];
+
+    if (allEmails.length === 0) {
+      toast.error("Please select or enter at least one email");
       return;
     }
 
     setSending(true);
 
     try {
-      // Get student IDs from selected emails
+      // Get student IDs from all emails (selected + manual)
       const selectedStudentIds = studentsWithEmail
-        .filter(s => selectedEmails.includes(s.email!))
+        .filter(s => allEmails.includes(s.email!))
         .map(s => s.id);
 
       const { data, error } = await supabase.functions.invoke('send-notification', {
@@ -61,9 +69,10 @@ export function SendNotificationDialog({ students }: SendNotificationDialogProps
 
       if (error) throw error;
       
-      toast.success(data.message || `Notification sent to ${selectedEmails.length} student(s)!`);
+      toast.success(data.message || `Notification sent to ${allEmails.length} recipient(s)!`);
       setMessage("");
       setSelectedEmails([]);
+      setManualEmails("");
       setOpen(false);
     } catch (error: any) {
       console.error('Send notification error:', error);
@@ -94,6 +103,17 @@ export function SendNotificationDialog({ students }: SendNotificationDialogProps
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Type your notification message..."
               rows={5}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="manual-emails">Manual Email Entry (comma or newline separated)</Label>
+            <Textarea
+              id="manual-emails"
+              value={manualEmails}
+              onChange={(e) => setManualEmails(e.target.value)}
+              placeholder="email1@example.com, email2@example.com&#10;or&#10;email3@example.com"
+              rows={3}
             />
           </div>
 

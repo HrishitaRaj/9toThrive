@@ -16,6 +16,7 @@ interface PostJobDialogProps {
     location?: string;
     salary?: string;
     deadline?: string;
+    scheduled_date?: string;
   }) => void;
 }
 
@@ -28,6 +29,7 @@ export function PostJobDialog({ onJobPosted }: PostJobDialogProps) {
     salary: "",
     location: "",
     deadline: "",
+    scheduled_date: "",
     description: "",
   });
 
@@ -40,7 +42,7 @@ export function PostJobDialog({ onJobPosted }: PostJobDialogProps) {
     }
 
     onJobPosted(formData);
-    setFormData({ title: "", company: "", role: "", salary: "", location: "", deadline: "", description: "" });
+    setFormData({ title: "", company: "", role: "", salary: "", location: "", deadline: "", scheduled_date: "", description: "" });
     setOpen(false);
   };
 
@@ -104,14 +106,25 @@ export function PostJobDialog({ onJobPosted }: PostJobDialogProps) {
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="deadline">Application Deadline</Label>
-            <Input
-              id="deadline"
-              type="date"
-              value={formData.deadline}
-              onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="deadline">Application Deadline</Label>
+              <Input
+                id="deadline"
+                type="date"
+                value={formData.deadline}
+                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="scheduled_date">Schedule Interview Date</Label>
+              <Input
+                id="scheduled_date"
+                type="datetime-local"
+                value={formData.scheduled_date}
+                onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })}
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description (Optional)</Label>

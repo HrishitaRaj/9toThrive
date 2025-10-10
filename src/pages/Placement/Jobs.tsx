@@ -69,6 +69,7 @@ export default function Jobs() {
         location: newJob.location,
         salary: newJob.salary,
         deadline: newJob.deadline,
+        scheduled_date: newJob.scheduled_date,
         applicants: 0,
         status: 'active',
         flagged: false
