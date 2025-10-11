@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/Placement/PageHeader";
+import { Link } from "react-router-dom";
 import { StatCard } from "@/components/Placement/StatCard";
+import { Button } from "@/components/ui/button";
 import { Users, CheckCircle, XCircle, Briefcase, FileText, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format, formatDistanceToNow } from "date-fns";
@@ -131,6 +133,12 @@ export default function Dashboard() {
 
   return (
     <div className="p-8">
+      <div className="flex justify-end mb-4">
+        <Link to="/">
+          <Button variant="ghost">Back to Home</Button>
+        </Link>
+      </div>
+
       <PageHeader
         title="Dashboard"
         description="Overview of placement cell activities and metrics"
