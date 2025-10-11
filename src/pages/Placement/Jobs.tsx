@@ -1,96 +1,114 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/Placement/PageHeader";
 import { DataTable } from "@/components/Placement/Datatable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Download } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { exportToExcel } from "@/utils/excelExport";
 import { PostJobDialog } from "@/components/Placement/PostJobDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Job {
   id: string;
-  jobTitle: string;
-  recruiter: string;
+  title: string;
+  company: string;
+  role: string;
+  description?: string;
+  location?: string;
+  salary?: string;
+  deadline?: string;
   applicants: number;
-  driveDate: string;
-  salary: string;
-  location: string;
+  status: "active" | "closed" | "draft";
+  flagged: boolean;
 }
 
-const mockJobs: Job[] = [
-  {
-    id: "1",
-    jobTitle: "Software Engineer",
-    recruiter: "Tech Innovations Pvt Ltd",
-    applicants: 45,
-    driveDate: "2025-11-15",
-    salary: "₹8.5 LPA",
-    location: "Bangalore",
-  },
-  {
-    id: "2",
-    jobTitle: "Data Analyst",
-    recruiter: "Global Systems Inc",
-    applicants: 32,
-    driveDate: "2025-11-20",
-    salary: "₹7 LPA",
-    location: "Hyderabad",
-  },
-  {
-    id: "3",
-    jobTitle: "Full Stack Developer",
-    recruiter: "Startup Ventures",
-    applicants: 58,
-    driveDate: "2025-11-25",
-    salary: "₹10 LPA",
-    location: "Pune",
-  },
-  {
-    id: "4",
-    jobTitle: "UI/UX Designer",
-    recruiter: "Design Solutions",
-    applicants: 23,
-    driveDate: "2025-12-01",
-    salary: "₹6.5 LPA",
-    location: "Mumbai",
-  },
-  {
-    id: "5",
-    jobTitle: "DevOps Engineer",
-    recruiter: "Cloud Tech Systems",
-    applicants: 41,
-    driveDate: "2025-12-05",
-    salary: "₹12 LPA",
-    location: "Bangalore",
-  },
-];
-
 export default function Jobs() {
-  const [jobs, setJobs] = useState<Job[]>(mockJobs);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleJobPosted = (newJob: Omit<Job, "id">) => {
-    const job = {
-      ...newJob,
-      id: (jobs.length + 1).toString(),
+  useEffect(() => {
+    fetchJobs();
+    
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('jobs-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
+        fetchJobs();
+      })
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
     };
-    setJobs(prev => [...prev, job]);
+  }, []);
+
+  const fetchJobs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setJobs((data || []) as Job[]);
+    } catch (error: any) {
+      toast.error(`Failed to fetch jobs: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleScheduleDrive = (jobTitle: string) => {
-    toast.success(`Placement drive scheduled for ${jobTitle}`);
+  const handleJobPosted = async (newJob: any) => {
+    try {
+      const { error } = await supabase.from('jobs').insert({
+        title: newJob.title,
+        company: newJob.company,
+        role: newJob.role,
+        description: newJob.description,
+        location: newJob.location,
+        salary: newJob.salary,
+        deadline: newJob.deadline,
+        scheduled_date: newJob.scheduled_date,
+        applicants: 0,
+        status: 'active',
+        flagged: false
+      });
+      
+      if (error) throw error;
+      toast.success("Job posted successfully!");
+      fetchJobs();
+    } catch (error: any) {
+      toast.error(`Failed to post job: ${error.message}`);
+    }
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', jobId);
+      
+      if (error) throw error;
+      toast.success("Job deleted successfully!");
+      fetchJobs();
+    } catch (error: any) {
+      toast.error(`Failed to delete job: ${error.message}`);
+    }
   };
 
   const handleExport = () => {
     try {
       const exportData = jobs.map(job => ({
         'Job ID': job.id,
-        'Job Title': job.jobTitle,
-        'Recruiter': job.recruiter,
+        'Job Title': job.title,
+        'Company': job.company,
+        'Role': job.role,
         'Applicants': job.applicants,
-        'Drive Date': job.driveDate,
-        'Salary': job.salary,
-        'Location': job.location,
+        'Status': job.status,
+        'Salary': job.salary || '',
+        'Location': job.location || '',
       }));
       
       exportToExcel(exportData, 'jobs_list', 'Jobs');
@@ -101,8 +119,9 @@ export default function Jobs() {
   };
 
   const columns = [
-    { key: "jobTitle", header: "Job Title" },
-    { key: "recruiter", header: "Recruiter" },
+    { key: "title", header: "Job Title" },
+    { key: "company", header: "Company" },
+    { key: "role", header: "Role" },
     {
       key: "applicants",
       header: "Applicants",
@@ -112,23 +131,29 @@ export default function Jobs() {
         </Badge>
       ),
     },
+    {
+      key: "status",
+      header: "Status",
+      render: (job: Job) => (
+        <Badge variant={job.status === "active" ? "default" : job.status === "closed" ? "secondary" : "outline"}>
+          {job.status}
+        </Badge>
+      ),
+    },
     { key: "salary", header: "Salary" },
     { key: "location", header: "Location" },
-    { key: "driveDate", header: "Drive Date" },
     {
       key: "actions",
       header: "Actions",
       render: (job: Job) => (
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleScheduleDrive(job.jobTitle)}
-          >
-            <Calendar className="w-4 h-4 mr-1" />
-            Schedule
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          variant="destructive"
+          onClick={() => handleDeleteJob(job.id)}
+        >
+          <Trash2 className="w-4 h-4 mr-1" />
+          Delete
+        </Button>
       ),
     },
   ];
@@ -150,7 +175,11 @@ export default function Jobs() {
       />
 
       <div className="mt-6">
-        <DataTable data={jobs} columns={columns} />
+        {loading ? (
+          <div className="text-center py-8">Loading jobs...</div>
+        ) : (
+          <DataTable data={jobs} columns={columns} />
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/Placement/PageHeader";
 import { DataTable } from "@/components/Placement/Datatable";
 import { Button } from "@/components/ui/button";
@@ -6,81 +6,113 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Flag } from "lucide-react";
 import { toast } from "sonner";
 import { AddRecruiterDialog } from "@/components/Placement/AddRecruiterDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Recruiter {
   id: string;
-  companyName: string;
-  activePostings: number;
+  company_name: string;
+  contact_name: string;
+  email: string;
+  phone?: string;
+  domain?: string;
+  active_postings: number;
   status: "active" | "inactive" | "flagged";
-  averageSalary: string;
-  jobRoles: string[];
+  average_salary?: string;
+  job_roles: string[];
 }
 
-const mockRecruiters: Recruiter[] = [
-  {
-    id: "1",
-    companyName: "Tech Innovations Pvt Ltd",
-    activePostings: 5,
-    status: "active",
-    averageSalary: "₹8.5 LPA",
-    jobRoles: ["Software Engineer", "Data Analyst"],
-  },
-  {
-    id: "2",
-    companyName: "Global Systems Inc",
-    activePostings: 3,
-    status: "active",
-    averageSalary: "₹12 LPA",
-    jobRoles: ["Full Stack Developer", "DevOps Engineer"],
-  },
-  {
-    id: "3",
-    companyName: "Design Solutions",
-    activePostings: 2,
-    status: "active",
-    averageSalary: "₹6.5 LPA",
-    jobRoles: ["UI/UX Designer", "Graphic Designer"],
-  },
-  {
-    id: "4",
-    companyName: "Manufacturing Hub",
-    activePostings: 0,
-    status: "inactive",
-    averageSalary: "₹5 LPA",
-    jobRoles: ["Production Engineer"],
-  },
-  {
-    id: "5",
-    companyName: "Startup Ventures",
-    activePostings: 4,
-    status: "flagged",
-    averageSalary: "₹7 LPA",
-    jobRoles: ["Product Manager", "Marketing Specialist"],
-  },
-];
-
 export default function Recruiters() {
-  const [recruiters, setRecruiters] = useState<Recruiter[]>(mockRecruiters);
+  const [recruiters, setRecruiters] = useState<Recruiter[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleRecruiterAdded = (newRecruiter: Omit<Recruiter, "id">) => {
-    const recruiter = {
-      ...newRecruiter,
-      id: (recruiters.length + 1).toString(),
+  useEffect(() => {
+    fetchRecruiters();
+    
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('recruiters-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'recruiters' }, () => {
+        fetchRecruiters();
+      })
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
     };
-    setRecruiters(prev => [...prev, recruiter]);
+  }, []);
+
+  const fetchRecruiters = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('recruiters')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setRecruiters((data || []) as Recruiter[]);
+    } catch (error: any) {
+      toast.error(`Failed to fetch recruiters: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleApprove = (companyName: string) => {
-    toast.success(`${companyName} has been approved!`);
+  const handleRecruiterAdded = async (newRecruiter: any) => {
+    try {
+      const { error } = await supabase.from('recruiters').insert({
+        company_name: newRecruiter.companyName,
+        contact_name: newRecruiter.contactName,
+        email: newRecruiter.email,
+        phone: newRecruiter.phone,
+        domain: newRecruiter.domain,
+        status: 'active',
+        active_postings: 0,
+        job_roles: []
+      });
+      
+      if (error) throw error;
+      toast.success("Recruiter added successfully!");
+      fetchRecruiters();
+    } catch (error: any) {
+      toast.error(`Failed to add recruiter: ${error.message}`);
+    }
   };
 
-  const handleFlag = (companyName: string) => {
-    toast.error(`${companyName} has been flagged for review.`);
+  const handleApprove = async (recruiter: Recruiter) => {
+    try {
+      const { error } = await supabase
+        .from('recruiters')
+        .update({ status: 'active' })
+        .eq('id', recruiter.id);
+      
+      if (error) throw error;
+      toast.success(`${recruiter.company_name} has been approved!`);
+      fetchRecruiters();
+    } catch (error: any) {
+      toast.error(`Failed to approve: ${error.message}`);
+    }
+  };
+
+  const handleFlag = async (recruiter: Recruiter) => {
+    try {
+      const { error } = await supabase
+        .from('recruiters')
+        .update({ status: 'flagged' })
+        .eq('id', recruiter.id);
+      
+      if (error) throw error;
+      toast.error(`${recruiter.company_name} has been flagged for review.`);
+      fetchRecruiters();
+    } catch (error: any) {
+      toast.error(`Failed to flag: ${error.message}`);
+    }
   };
 
   const columns = [
-    { key: "companyName", header: "Company Name" },
-    { key: "activePostings", header: "Active Postings" },
+    { key: "company_name", header: "Company Name" },
+    { key: "contact_name", header: "Contact Name" },
+    { key: "email", header: "Email" },
+    { key: "active_postings", header: "Active Postings" },
     {
       key: "status",
       header: "Status",
@@ -103,17 +135,21 @@ export default function Recruiters() {
         </Badge>
       ),
     },
-    { key: "averageSalary", header: "Average Salary" },
+    { key: "average_salary", header: "Average Salary" },
     {
-      key: "jobRoles",
+      key: "job_roles",
       header: "Job Roles Offered",
       render: (recruiter: Recruiter) => (
         <div className="flex flex-wrap gap-1">
-          {recruiter.jobRoles.map((role, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
-              {role}
-            </Badge>
-          ))}
+          {recruiter.job_roles?.length > 0 ? (
+            recruiter.job_roles.map((role, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {role}
+              </Badge>
+            ))
+          ) : (
+            <span className="text-muted-foreground text-sm">No roles</span>
+          )}
         </div>
       ),
     },
@@ -127,7 +163,7 @@ export default function Recruiters() {
               size="sm"
               variant="default"
               className="bg-success hover:bg-success/90"
-              onClick={() => handleApprove(recruiter.companyName)}
+              onClick={() => handleApprove(recruiter)}
             >
               <CheckCircle className="w-4 h-4 mr-1" />
               Approve
@@ -137,7 +173,7 @@ export default function Recruiters() {
             <Button
               size="sm"
               variant="destructive"
-              onClick={() => handleFlag(recruiter.companyName)}
+              onClick={() => handleFlag(recruiter)}
             >
               <Flag className="w-4 h-4 mr-1" />
               Flag

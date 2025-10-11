@@ -9,46 +9,40 @@ import { toast } from "sonner";
 
 interface PostJobDialogProps {
   onJobPosted: (job: {
-    jobTitle: string;
-    recruiter: string;
-    applicants: number;
-    driveDate: string;
-    salary: string;
-    location: string;
+    title: string;
+    company: string;
+    role: string;
+    description?: string;
+    location?: string;
+    salary?: string;
+    deadline?: string;
+    scheduled_date?: string;
   }) => void;
 }
 
 export function PostJobDialog({ onJobPosted }: PostJobDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    jobTitle: "",
-    recruiter: "",
+    title: "",
+    company: "",
+    role: "",
     salary: "",
     location: "",
-    driveDate: "",
+    deadline: "",
+    scheduled_date: "",
     description: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.jobTitle || !formData.recruiter || !formData.salary || !formData.location || !formData.driveDate) {
+    if (!formData.title || !formData.company || !formData.role) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    const newJob = {
-      jobTitle: formData.jobTitle,
-      recruiter: formData.recruiter,
-      applicants: 0,
-      driveDate: formData.driveDate,
-      salary: formData.salary,
-      location: formData.location,
-    };
-
-    onJobPosted(newJob);
-    toast.success("Job posted successfully!");
-    setFormData({ jobTitle: "", recruiter: "", salary: "", location: "", driveDate: "", description: "" });
+    onJobPosted(formData);
+    setFormData({ title: "", company: "", role: "", salary: "", location: "", deadline: "", scheduled_date: "", description: "" });
     setOpen(false);
   };
 
@@ -66,21 +60,30 @@ export function PostJobDialog({ onJobPosted }: PostJobDialogProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="jobTitle">Job Title *</Label>
+            <Label htmlFor="title">Job Title *</Label>
             <Input
-              id="jobTitle"
-              value={formData.jobTitle}
-              onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+              id="title"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g., Software Engineer"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="recruiter">Company/Recruiter *</Label>
+            <Label htmlFor="company">Company *</Label>
             <Input
-              id="recruiter"
-              value={formData.recruiter}
-              onChange={(e) => setFormData({ ...formData, recruiter: e.target.value })}
+              id="company"
+              value={formData.company}
+              onChange={(e) => setFormData({ ...formData, company: e.target.value })}
               placeholder="e.g., Tech Innovations Pvt Ltd"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="role">Role *</Label>
+            <Input
+              id="role"
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              placeholder="e.g., Full Stack Developer"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -103,14 +106,25 @@ export function PostJobDialog({ onJobPosted }: PostJobDialogProps) {
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="driveDate">Drive Date *</Label>
-            <Input
-              id="driveDate"
-              type="date"
-              value={formData.driveDate}
-              onChange={(e) => setFormData({ ...formData, driveDate: e.target.value })}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="deadline">Application Deadline</Label>
+              <Input
+                id="deadline"
+                type="date"
+                value={formData.deadline}
+                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="scheduled_date">Schedule Interview Date</Label>
+              <Input
+                id="scheduled_date"
+                type="datetime-local"
+                value={formData.scheduled_date}
+                onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })}
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description (Optional)</Label>
