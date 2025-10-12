@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,9 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+
+// resume parsing helper
+import { extractBasicResumeInfo } from '@/utils/resumeParser';
 
 // Register the components required for the radar chart
 ChartJS.register(
@@ -57,6 +60,13 @@ const Jobs = () => {
   const { applyToJob, isJobApplied } = useJobs();
   const [selectedJob, setSelectedJob] = useState<ExtendedJob | null>(null);
   const [skillGapDialogOpen, setSkillGapDialogOpen] = useState(false);
+  // Recommendation & resume states
+  const [recommendations, setRecommendations] = useState<ExtendedJob[]>([]);
+  const [isRecommending, setIsRecommending] = useState(false);
+  const [resumeModalOpen, setResumeModalOpen] = useState(false);
+  const [resumeTextInput, setResumeTextInput] = useState('');
+  const [activeUserSkills, setActiveUserSkills] = useState<string[] | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   
   const handleApply = (job: ExtendedJob) => {
     applyToJob(job);
@@ -128,6 +138,130 @@ const Jobs = () => {
         },
       ],
     };
+  };
+
+  // --- Resume upload / parsing / recommendation flow ---
+  const openFilePicker = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const parsePDFFile = async (file: File): Promise<string> => {
+    try {
+      // send to server for parsing (server should return plain text)
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/parse-pdf', { method: 'POST', body: fd });
+      if (res.ok) {
+        return await res.text();
+      }
+      return '';
+    } catch (err) {
+      console.error('PDF parse error', err);
+      return '';
+    }
+  };
+
+  const handleFileChange = async (e: any) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsRecommending(true);
+    let text = '';
+    if (file.name.endsWith('.pdf')) {
+      text = await parsePDFFile(file);
+    } else if (file.name.endsWith('.txt')) {
+      text = await file.text();
+    } else if (file.name.endsWith('.docx')) {
+      // fallback: send to server for docx parsing
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch('/api/parse-docx', { method: 'POST', body: fd });
+        if (res.ok) {
+          text = await res.text();
+        }
+      } catch (err) {
+        console.error('docx parse failed', err);
+      }
+    } else {
+      // try to read as text
+      text = await file.text();
+    }
+
+    if (!text) {
+      toast.error('Could not parse resume file');
+      setIsRecommending(false);
+      return;
+    }
+
+    setResumeTextInput(text);
+    const info = extractBasicResumeInfo(text);
+    setActiveUserSkills(info.skills || []);
+    await fetchRecommendations(info.skills || []);
+    setIsRecommending(false);
+  };
+
+  const handleRecommendFromText = async () => {
+    if (!resumeTextInput || resumeTextInput.trim().length < 10) {
+      toast.error('Please paste your resume text or upload a file');
+      return;
+    }
+    setIsRecommending(true);
+    const info = extractBasicResumeInfo(resumeTextInput);
+    setActiveUserSkills(info.skills || []);
+    await fetchRecommendations(info.skills || []);
+    setIsRecommending(false);
+  };
+
+  // Try to call backend recommendation endpoint; if it fails, fallback to local simple matching
+  const fetchRecommendations = async (skills: string[]) => {
+    try {
+      const res = await fetch('/api/recommend-by-resume', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skills })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // normalize incoming jobs to ExtendedJob shape
+        const normalized: ExtendedJob[] = (data || []).map((j: any, idx: number) => ({
+          id: j.id || idx + 1000,
+          title: j.title || j.job_title || 'Untitled',
+          company: j.company || j.employer || 'Unknown',
+          location: j.location || j.city || 'Remote',
+          type: j.type || j.employment_type || 'Fulltime',
+          experience: j.experience || j.years || '0',
+          salary: j.salary || j.compensation || 'N/A',
+          match: j.match || 0,
+          potentialMatch: j.potentialMatch || 0,
+          description: j.description || j.job_description || '',
+          requirements: j.requirements || j.skills || [],
+          requiredSkillLevels: j.requiredSkillLevels || [],
+          skillsToDevelop: j.skillsToDevelop || [],
+          benefits: j.benefits || [],
+          postedDate: j.postedDate || j.posted || 'N/A',
+          learningPaths: j.learningPaths || []
+        }));
+
+        // limit to top 15
+        setRecommendations(normalized.slice(0, 15));
+        toast.success(`Found ${Math.min(15, normalized.length)} recommended jobs`);
+        return;
+      }
+    } catch (err) {
+      console.warn('recommendation endpoint failed, falling back to local matching', err);
+    }
+
+    // Local fallback: score static jobs by overlap of skills
+    const lowerSkills = skills.map(s => s.toLowerCase());
+    const scored = jobs.map(j => {
+      const reqs = (j.requirements || []).map((r: string) => r.toLowerCase());
+      const common = reqs.filter((r: string) => lowerSkills.includes(r));
+      const score = Math.round((common.length / Math.max(1, reqs.length)) * 100);
+      return { ...j, match: score } as ExtendedJob;
+    }).sort((a, b) => b.match - a.match);
+
+    setRecommendations(scored.slice(0, 15));
+    toast.success(`Displayed ${Math.min(15, scored.length)} local recommendations`);
   };
 
   // Calculate actual match percentage based on skills
@@ -366,8 +500,35 @@ const Jobs = () => {
         </div>
       </div>
 
+      {/* Resume upload / paste area */}
+      <div className="mt-4 p-4 rounded-md border bg-background/50">
+        <h2 className="text-lg font-semibold">Get Recommendations from your Resume</h2>
+        <p className="text-sm text-muted-foreground mb-2">Upload a PDF, DOCX, or TXT of your resume, or paste the plain text below.</p>
+        <div className="flex gap-2 mb-2">
+          <input ref={fileInputRef} type="file" accept=".pdf,.docx,.txt" onChange={handleFileChange} className="hidden" />
+          <Button onClick={openFilePicker} className="bg-primary">Upload Resume</Button>
+          <Button variant="outline" onClick={() => { setResumeTextInput(''); setActiveUserSkills(null); setRecommendations([]); }}>Clear</Button>
+          <Button variant="ghost" onClick={() => setResumeModalOpen(!resumeModalOpen)}>{resumeModalOpen ? 'Close' : 'Paste Resume'}</Button>
+          <div className="ml-auto text-sm text-muted-foreground">Top 15 matches will be shown</div>
+        </div>
+
+        {resumeModalOpen && (
+          <div className="mb-2">
+            <textarea value={resumeTextInput} onChange={(e) => setResumeTextInput(e.target.value)} rows={6} className="w-full p-2 border rounded" placeholder="Paste your resume text here..."></textarea>
+            <div className="flex gap-2 mt-2">
+              <Button onClick={handleRecommendFromText} disabled={isRecommending}>{isRecommending ? 'Finding...' : 'Get Recommendations'}</Button>
+              <Button variant="outline" onClick={() => { setResumeTextInput(''); }}>Clear Text</Button>
+            </div>
+          </div>
+        )}
+
+        {activeUserSkills && activeUserSkills.length > 0 && (
+          <div className="text-sm text-muted-foreground">Detected skills: {activeUserSkills.join(', ')}</div>
+        )}
+      </div>
+
       <div className="grid gap-6">
-        {jobs.map((job) => {
+        {(recommendations && recommendations.length > 0 ? recommendations : jobs).map((job) => {
           const applied = isJobApplied(job.id);
           return (
             <Card

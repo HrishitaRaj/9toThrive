@@ -324,7 +324,7 @@ const Match = () => {
             <div className="text-6xl mb-4">🎉</div>
             <h2 className="text-2xl font-bold text-foreground">All Caught Up!</h2>
             <p className="text-muted-foreground">
-              You've reviewed all jobs with 85%+ match based on your resume. Upload a new resume or check back later!!
+              You've reviewed all jobs with 85%+ match based on your resume. Upload a new resume or check back later!!!
             </p>
             <div className="flex gap-3 justify-center mt-6">
               <Button onClick={() => setCurrentIndex(0)}>
